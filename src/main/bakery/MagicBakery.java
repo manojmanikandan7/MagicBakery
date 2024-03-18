@@ -3,12 +3,22 @@ package bakery;
 import util.*;
 
 import java.io.File;
+import java.util.PriorityQueue;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Queue;
+import java.util.List;
 
 
 public class MagicBakery {
-    public ArrayList<Player> players;
-
+    //private Customers customers;
+    private Collection<Layer> layers;
+    private Collection<Player> players;
+    private Collection<Ingredient> pantry;
+    private Collection<Ingredient> pantryDeck;
+    private Collection<Ingredient> pantryDiscard;
+    
+    private int action_count;
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile){
         /* Ingredient Flour=new Ingredient("Flour");
         Ingredient Sugar=new Ingredient("Sugar");
@@ -27,7 +37,8 @@ public class MagicBakery {
         CustomerOrder order1=new CustomerOrder("order1", Layer1.getRecipe(), ingredients, 1);
 
         System.out.println(order1.getRecipeDescription()+"\n"+order1.getGarnishDescription()); */
-        players=new ArrayList<Player>();
+        players=new PriorityQueue<Player>();
+        action_count=0;
         ConsoleUtils in=new ConsoleUtils();
         startGame(null, "");
         File path=in.promptForFilePath("Enter the file path for ingredients: ");
@@ -60,12 +71,108 @@ public class MagicBakery {
 
     }
 
-    public void startGame(ArrayList<String> playerNames, String customerDeckFile){
+    public void bakeLayer(Layer layer){
+
+    }
+
+    private Ingredient drawFromPantryDeck(){
+        return null;
+    }
+
+    public void drawFromPantry(String IngredientName){
+
+    }
+
+    public void drawFromPantry(Ingredient ingredient){
+
+    }
+
+    public boolean endTurn(){
+        return false;
+    }
+
+    public List<Ingredient> fulfillOrder(CustomerOrder customer, boolean garnish){
+        return null;
+    }
+
+    public int getActionsPermitted(){
+        if(players.size()<=3){
+            return 3;
+        }
+        else{
+            return 2;
+        }
+    }
+
+    public int getActionsRemaining(){
+        return getActionsPermitted()-action_count;
+    }
+
+    public Collection<Layer> getBakeableLayers(){
+        return null;
+    }
+
+    public Player getCurrentPlayer(){
+        PriorityQueue<Player> playerqueue=new PriorityQueue<Player>(players);
+        return playerqueue.peek();
+    }
+
+    /* public Customers getCustomers(){
+        return null;
+    } */
+
+    public Collection<CustomerOrder> getFulfillableCustomers(){
+        return null;
+    }
+
+
+    public Collection<CustomerOrder> getGarnishableCustomers(){
+        return null;
+    }
+
+    public Collection<Layer> getLayers(){
+        return null;
+    }
+
+    public Collection<Ingredient> getPantry(){
+        return null;
+    }
+
+    public Collection<Player> getPlayers(){
         ConsoleUtils in=new ConsoleUtils();
         ArrayList<String> playerstr=in.promptForNewPlayers("Who's playing?");
         for(String p:playerstr){
             players.add(new Player(p));
         }
+        return players;
+    }
+
+    public static MagicBakery loadState(File file){
+        return null;
+    }
+
+    public void passCard(Ingredient ingredient, Player recipient){
+
+    }
+
+    public void printCustomerServiceRecord(){
+
+    }
+
+    public void printGameState(){
+
+    }
+
+    public void refreshPantry(){
+
+    }
+
+    public void saveState(File file){
+
+    }
+
+    public void startGame(ArrayList<String> playerNames, String customerDeckFile){
+
         System.out.println(players.toString());
     }
 }

@@ -1,6 +1,6 @@
 package bakery;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class CustomerOrder {
     public enum CustomerOrderStatus{
@@ -10,13 +10,13 @@ public class CustomerOrder {
         IMPATIENT,
         GIVEN_UP
     }
-    private ArrayList<Ingredient> garnish;
+    private List<Ingredient> garnish;
     private int level;
     private String name;
-    private ArrayList<Ingredient> recipe;
+    private List<Ingredient> recipe;
     private CustomerOrderStatus status;
 
-    public CustomerOrder(String name, ArrayList<Ingredient> recipe, ArrayList<Ingredient> garnish, int level){
+    public CustomerOrder(String name, List<Ingredient> recipe, List<Ingredient> garnish, int level){
             this.name=name;
             this.recipe=recipe;
             this.garnish=garnish;
@@ -28,13 +28,25 @@ public class CustomerOrder {
         status=CustomerOrderStatus.GIVEN_UP;
     }
     
-    public ArrayList<Ingredient> getGarnish(){
+    public boolean canFulfill(List<Ingredient> ingredients){
+        return false;
+    }
+
+    public boolean canGarnish(List<Ingredient> ingredients){
+        return false;
+    }
+
+    public List<Ingredient> fulfill(List<Ingredient> ingredients, boolean garnish){
+        return null;
+    }
+
+    public List<Ingredient> getGarnish(){
         return garnish;
     }
 
     public String getGarnishDescription(){
 
-        if(garnish.size()==0){
+        if(garnish.isEmpty()){
             return "";
         }
 
@@ -49,13 +61,13 @@ public class CustomerOrder {
         return level;
     }
 
-    public ArrayList<Ingredient> getRecipe(){
+    public List<Ingredient> getRecipe(){
         return recipe;
     }
 
     public String getRecipeDescription(){
 
-        if(recipe.size()==0){
+        if(recipe.isEmpty()){
             return "";
         }
 

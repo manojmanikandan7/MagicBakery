@@ -35,7 +35,16 @@ public class ConsoleUtils {
         boolean more=true;
         do{
             player_number++;
-            players.add(readLine("Player "+player_number+" name: "));
+            while(true){
+                String player_name=readLine("Player "+player_number+" name: ");
+                if(players.contains(player_name)){
+                    System.out.println("Player with the name "+player_name+" exists! Try again.");
+                    continue;
+                }
+                players.add(player_name);
+                break;
+            }
+            
             if(player_number<5){
                 more=promptForYesNo("Add another?"); 
             }

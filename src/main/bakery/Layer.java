@@ -1,20 +1,26 @@
 package bakery;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Layer extends Ingredient{
-    private ArrayList<Ingredient> recipe;
+    private List<Ingredient> recipe;
     
     public Layer(String name, ArrayList<Ingredient> recipe){
         super(name);
         this.recipe=recipe;
     }
 
-    public ArrayList<Ingredient> getRecipe(){
+    public List<Ingredient> getRecipe(){
         return recipe;
     }
 
     public String getRecipeDescription(){
+
+        if(recipe.isEmpty()){
+            return "";
+        }
+
         String description="";
         for(Ingredient ingredient : recipe){
             description+=ingredient+", ";

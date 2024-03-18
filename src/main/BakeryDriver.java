@@ -7,7 +7,7 @@ public class BakeryDriver {
 
     public static void main(String[] args)  {
         
-        MagicBakery ob=new MagicBakery(10, "../../io/ingredients.csv" , "../../io/layers.csv");
+        new MagicBakery(10, "../../io/ingredients.csv" , "../../io/layers.csv");
 
     }
 
