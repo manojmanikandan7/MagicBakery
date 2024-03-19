@@ -1,14 +1,19 @@
 package util;
 
+import java.lang.Object;
 import java.util.List;
+
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.io.Console;
 import java.io.File;
 
+import bakery.CustomerOrder;
 import bakery.Ingredient;
 import bakery.MagicBakery;
 import bakery.Player;
+import bakery.MagicBakery.ActionType;
 
 public class ConsoleUtils {
     private Console console;
@@ -27,6 +32,28 @@ public class ConsoleUtils {
         return line;
     }
 
+    //COME BACK
+    public ActionType promptForAction(String prompt, MagicBakery bakery){
+        ArrayList<ActionType> actions=new ArrayList<ActionType>();
+        for(ActionType action:ActionType.values()){
+            actions.add(action);
+        }
+
+        return (ActionType) promptEnumerateCollection(prompt, new ArrayList<Object>(actions));
+    }
+
+    public CustomerOrder promptForCustomer(String prompt, Collection<CustomerOrder> customers){
+        
+        ArrayList<CustomerOrder> customer_list=new ArrayList<CustomerOrder>(customers);
+        if(customer_list.size()==0){
+            return null;
+        }
+        if(customer_list.size()==1){
+            return customer_list.get(0);
+        }
+        return (CustomerOrder) promptEnumerateCollection(prompt, new ArrayList<Object>(customer_list)); 
+    }
+
     public Player promptForExistingPlayer(String prompt, MagicBakery bakery){
 
         ArrayList<Player> players=new ArrayList<Player>(bakery.getPlayers());
@@ -35,27 +62,9 @@ public class ConsoleUtils {
             return players.get(0);
         }
 
-        System.out.println(prompt);
-
-        int counter=1;
-        for(Player player:players){
-            System.out.println("["+counter+"] "+player);
-            counter++;
-        }
+        return (Player) promptEnumerateCollection(prompt, new ArrayList<Object>(players));
         
-        while(true){
-            try{
-                int choice=Integer.parseInt(readLine());
-                if(choice<1 || choice>players.size()){
-                    System.out.println("Wrong Choice! Try again.");
-                    continue;
-                }
-                return players.get(choice-1);
-            }
-            catch(NumberFormatException e){
-                System.out.println("Please enter a number.");
-            }
-        }
+        
     }
 
     public File promptForFilePath(String prompt){
@@ -72,27 +81,7 @@ public class ConsoleUtils {
         if(ingredient_list.size()==1){
             return ingredient_list.get(0);
         }
-        System.out.println(prompt);
-
-        int counter=1;
-        for(Ingredient ingredient:ingredient_list){
-           System.out.println("["+ counter +"] "+ingredient); 
-           counter++;
-        }
-
-        while(true){
-            try{
-                int choice=Integer.parseInt(readLine());
-                if(choice<1 || choice>ingredient_list.size()){
-                    System.out.println("Wrong Choice! Try again.");
-                    continue;
-                }
-                return ingredient_list.get(choice-1);
-            }
-            catch(NumberFormatException e){
-                System.out.println("Please enter a number.");
-            }
-        }
+        return (Ingredient) promptEnumerateCollection(prompt, new ArrayList<Object>(ingredient_list));
 
     }
 
@@ -164,4 +153,29 @@ public class ConsoleUtils {
 
     }
     
+    private Object promptEnumerateCollection(String prompt, Collection<Object> collection){
+        ArrayList<Object> list=new ArrayList<Object>(collection);
+        
+        System.out.println(prompt);
+
+        int counter=1;
+        for(Object object:list){
+            System.out.println("["+counter+"] "+object);
+            counter++;
+        }
+        
+        while(true){
+            try{
+                int choice=Integer.parseInt(readLine());
+                if(choice<1 || choice>list.size()){
+                    System.out.println("Wrong Choice! Try again.");
+                    continue;
+                }
+                return list.get(choice-1);
+            }
+            catch(NumberFormatException e){
+                System.out.println("Please enter a number.");
+            }
+        }
+    }
 }

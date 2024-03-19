@@ -7,6 +7,14 @@ import java.io.File;
 
 
 public class MagicBakery {
+    public enum ActionType{
+        DRAW_INGREDIENT,
+        PASS_INGREDIENT,
+        BAKE_LAYER,
+        FULFIL_ORDER, //Minor typo
+        REFRESH_PANTRY
+    }
+
     //private Customers customers;
     private Collection<Layer> layers;
     private Collection<Player> players;
