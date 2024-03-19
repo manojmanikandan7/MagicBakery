@@ -4,6 +4,9 @@ import java.io.Console;
 import java.io.File;
 import java.util.ArrayList;
 
+import bakery.MagicBakery;
+import bakery.Player;
+
 public class ConsoleUtils {
     private Console console;
 
@@ -19,6 +22,37 @@ public class ConsoleUtils {
     public String readLine(String fmt, Object... args){
         String line=console.readLine(fmt, args);
         return line;
+    }
+
+    public Player promptForExistingPlayer(String prompt, MagicBakery bakery){
+
+        ArrayList<Player> players=new ArrayList<Player>(bakery.getPlayers());
+        players.remove(bakery.getCurrentPlayer());
+        if(players.size()==1){
+            return players.get(0);
+        }
+
+        System.out.println(prompt);
+
+        int counter=1;
+        for(Player player:players){
+            System.out.println("["+counter+"] "+player.toString());
+            counter++;
+        }
+        
+        while(true){
+            try{
+                int choice=Integer.parseInt(readLine());
+                if(choice<1 || choice>players.size()){
+                    System.out.println("Wrong Choice! Try again.");
+                    continue;
+                }
+                return players.get(choice-1);
+            }
+            catch(NumberFormatException e){
+                System.out.println("Please enter a number.");
+            }
+        }
     }
 
     public File promptForFilePath(String prompt){

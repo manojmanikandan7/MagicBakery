@@ -3,9 +3,9 @@ package bakery;
 import util.*;
 
 import java.io.File;
-import java.util.PriorityQueue;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.List;
 
@@ -19,6 +19,7 @@ public class MagicBakery {
     private Collection<Ingredient> pantryDiscard;
     
     private int action_count;
+    public Player firstPlayer;
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile){
         /* Ingredient Flour=new Ingredient("Flour");
         Ingredient Sugar=new Ingredient("Sugar");
@@ -37,15 +38,20 @@ public class MagicBakery {
         CustomerOrder order1=new CustomerOrder("order1", Layer1.getRecipe(), ingredients, 1);
 
         System.out.println(order1.getRecipeDescription()+"\n"+order1.getGarnishDescription()); */
-        players=new PriorityQueue<Player>();
+        players=new LinkedList<Player>();
         action_count=0;
-        ConsoleUtils in=new ConsoleUtils();
-        startGame(null, "");
+
+        
+
+        /* startGame(null, "");
         File path=in.promptForFilePath("Enter the file path for ingredients: ");
         ingredientDeckFile=path.toString();
         ArrayList<Ingredient> ingredientslist=CardUtils.readIngredientFile(ingredientDeckFile);
 
-        System.out.println("Size of ingredients list: "+ingredientslist.size());
+
+        Player choice=in.promptForExistingPlayer("Choose one: ", this);
+        System.out.println(choice); */
+        /* System.out.println("Size of ingredients list: "+ingredientslist.size());
         System.out.println("The Ingredients: ");
         for(Ingredient ingredient:ingredientslist){
             System.out.println(ingredient.toString());
@@ -67,7 +73,7 @@ public class MagicBakery {
             System.out.println("Name of dish: " + customer.toString()+"\n"+
                                 "The ingredients required for the recipe: "+customer.getRecipeDescription()+"\n"+
                                 "The ingredients required for the garnish: "+customer.getGarnishDescription());
-        }
+        } */
 
     }
 
@@ -88,7 +94,17 @@ public class MagicBakery {
     }
 
     public boolean endTurn(){
-        return false;
+        if(getActionsRemaining()>0){
+            return false;
+        }
+        Player currentPlayer=getCurrentPlayer();
+        players.remove(currentPlayer);
+        if(getCurrentPlayer().toString().equals(firstPlayer.toString())){
+            System.out.println("New Round");
+        }
+        players.add(currentPlayer);
+        action_count=0;
+        return true;
     }
 
     public List<Ingredient> fulfillOrder(CustomerOrder customer, boolean garnish){
@@ -105,7 +121,13 @@ public class MagicBakery {
     }
 
     public int getActionsRemaining(){
-        return getActionsPermitted()-action_count;
+        
+        int actions_remaining=getActionsPermitted()-action_count;
+
+        if(actions_remaining<0){
+            throw new TooManyActionsException();
+        }
+        return actions_remaining;
     }
 
     public Collection<Layer> getBakeableLayers(){
@@ -113,8 +135,8 @@ public class MagicBakery {
     }
 
     public Player getCurrentPlayer(){
-        PriorityQueue<Player> playerqueue=new PriorityQueue<Player>(players);
-        return playerqueue.peek();
+        LinkedList<Player> playerlist=new LinkedList<Player>(players);
+        return playerlist.peek();
     }
 
     /* public Customers getCustomers(){
@@ -139,11 +161,6 @@ public class MagicBakery {
     }
 
     public Collection<Player> getPlayers(){
-        ConsoleUtils in=new ConsoleUtils();
-        ArrayList<String> playerstr=in.promptForNewPlayers("Who's playing?");
-        for(String p:playerstr){
-            players.add(new Player(p));
-        }
         return players;
     }
 
@@ -152,7 +169,8 @@ public class MagicBakery {
     }
 
     public void passCard(Ingredient ingredient, Player recipient){
-
+        recipient.addToHand(ingredient);
+        action_count++;
     }
 
     public void printCustomerServiceRecord(){
@@ -172,7 +190,10 @@ public class MagicBakery {
     }
 
     public void startGame(ArrayList<String> playerNames, String customerDeckFile){
-
-        System.out.println(players.toString());
+        firstPlayer=new Player(playerNames.get(0));
+        for(String p:playerNames){
+            players.add(new Player(p));
+        }
+        
     }
 }
