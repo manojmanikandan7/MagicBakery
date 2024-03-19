@@ -2,9 +2,11 @@ package util;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.io.Console;
 import java.io.File;
 
+import bakery.Ingredient;
 import bakery.MagicBakery;
 import bakery.Player;
 
@@ -37,7 +39,7 @@ public class ConsoleUtils {
 
         int counter=1;
         for(Player player:players){
-            System.out.println("["+counter+"] "+player.toString());
+            System.out.println("["+counter+"] "+player);
             counter++;
         }
         
@@ -60,6 +62,38 @@ public class ConsoleUtils {
         String pathname=readLine(prompt);
         File path=new File(pathname);
         return path;
+    }
+
+    public Ingredient promptForIngredient(String prompt, Collection<Ingredient> ingredients){
+        ArrayList<Ingredient> ingredient_list=new ArrayList<Ingredient>(ingredients);
+        if(ingredient_list.size()==0){
+            return null;
+        }
+        if(ingredient_list.size()==1){
+            return ingredient_list.get(0);
+        }
+        System.out.println(prompt);
+
+        int counter=1;
+        for(Ingredient ingredient:ingredient_list){
+           System.out.println("["+ counter +"] "+ingredient); 
+           counter++;
+        }
+
+        while(true){
+            try{
+                int choice=Integer.parseInt(readLine());
+                if(choice<1 || choice>ingredient_list.size()){
+                    System.out.println("Wrong Choice! Try again.");
+                    continue;
+                }
+                return ingredient_list.get(choice-1);
+            }
+            catch(NumberFormatException e){
+                System.out.println("Please enter a number.");
+            }
+        }
+
     }
 
     public List<String> promptForNewPlayers(String prompt){

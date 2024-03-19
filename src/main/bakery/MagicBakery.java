@@ -1,7 +1,7 @@
 package bakery;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.List;
 import java.io.File;
 
@@ -34,7 +34,7 @@ public class MagicBakery {
         CustomerOrder order1=new CustomerOrder("order1", Layer1.getRecipe(), ingredients, 1);
 
         System.out.println(order1.getRecipeDescription()+"\n"+order1.getGarnishDescription()); */
-        players=new LinkedList<Player>();
+        players=new ArrayDeque<Player>();
         action_count=0;
 
         
@@ -131,7 +131,7 @@ public class MagicBakery {
     }
 
     public Player getCurrentPlayer(){
-        LinkedList<Player> playerlist=new LinkedList<Player>(players);
+        ArrayDeque<Player> playerlist=new ArrayDeque<Player>(players);
         return playerlist.peek();
     }
 
