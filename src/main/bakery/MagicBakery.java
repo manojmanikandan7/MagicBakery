@@ -1,13 +1,9 @@
 package bakery;
 
-import util.*;
-
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.List;
+import java.io.File;
 
 
 public class MagicBakery {
@@ -189,7 +185,7 @@ public class MagicBakery {
 
     }
 
-    public void startGame(ArrayList<String> playerNames, String customerDeckFile){
+    public void startGame(List<String> playerNames, String customerDeckFile){
         firstPlayer=new Player(playerNames.get(0));
         for(String p:playerNames){
             players.add(new Player(p));

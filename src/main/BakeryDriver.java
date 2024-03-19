@@ -14,7 +14,7 @@ public class BakeryDriver {
         
         MagicBakery ob=new MagicBakery(10, "../../io/ingredients.csv" , "../../io/layers.csv");
         ConsoleUtils in=new ConsoleUtils();
-        ArrayList<String> playerstr=in.promptForNewPlayers("Who's playing?");
+        ArrayList<String> playerstr=new ArrayList<String>(in.promptForNewPlayers("Who's playing?"));
         ob.startGame(playerstr, null);
         for(int i=0;i<20;i++){
             ob.endTurn();

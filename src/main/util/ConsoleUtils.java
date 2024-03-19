@@ -1,8 +1,9 @@
 package util;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.io.Console;
 import java.io.File;
-import java.util.ArrayList;
 
 import bakery.MagicBakery;
 import bakery.Player;
@@ -61,7 +62,7 @@ public class ConsoleUtils {
         return path;
     }
 
-    public ArrayList<String> promptForNewPlayers(String prompt){
+    public List<String> promptForNewPlayers(String prompt){
         int player_number=1;
         ArrayList<String> players=new ArrayList<String>();
         System.out.println(prompt);
@@ -72,7 +73,7 @@ public class ConsoleUtils {
             while(true){
                 String player_name=readLine("Player "+player_number+" name: ");
                 if(players.contains(player_name)){
-                    System.out.println("Player with the name "+player_name+" exists! Try again.");
+                    System.out.println("Imposter detected! Player with the name "+player_name+" already exists. Try again.");
                     continue;
                 }
                 players.add(player_name);

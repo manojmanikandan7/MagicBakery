@@ -1,17 +1,19 @@
 package util;
 
-import bakery.*;
-
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Collection;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.FileNotFoundException;
+
+import bakery.*;
 
 public class CardUtils {
    private CardUtils(){}
    
-   public static ArrayList<Ingredient> readIngredientFile(String path){
+   public static List<Ingredient> readIngredientFile(String path){
     
     ArrayList<Ingredient> ingredient=new ArrayList<Ingredient>();
 
@@ -19,11 +21,10 @@ public class CardUtils {
         FileReader file=new FileReader(path);
         BufferedReader in=new BufferedReader(file);
     ){
+        String line;
         in.readLine(); //Ignoring the column header for the file; COME BACK
-        String line=in.readLine();
-        while(line != null){
-            ingredient.addAll(stringToIngredients(line));
-            line=in.readLine();
+        while((line=in.readLine()) != null){
+            ingredient.addAll(stringToIngredients(line)); 
         }
     }
     catch(FileNotFoundException e){
@@ -37,7 +38,7 @@ public class CardUtils {
     return ingredient;
    }
 
-   public static ArrayList<Layer> readLayerFile(String path){
+   public static List<Layer> readLayerFile(String path){
 
     ArrayList<Layer> layer=new ArrayList<Layer>();
 
@@ -46,10 +47,9 @@ public class CardUtils {
         BufferedReader in=new BufferedReader(file);
     ){
         in.readLine(); //Ignoring the column header for the file; COME BACK
-        String line=in.readLine();
-        while(line != null){
+        String line;
+        while((line=in.readLine()) != null){
             layer.addAll(stringToLayers(line));
-            line=in.readLine();
         }
     }
     catch(FileNotFoundException e){
@@ -63,7 +63,7 @@ public class CardUtils {
     return layer;
    }
 
-   public static ArrayList<CustomerOrder> readCustomerFile(String path, ArrayList<Layer> layers){
+   public static List<CustomerOrder> readCustomerFile(String path, Collection<Layer> layers){
 
     ArrayList<CustomerOrder> customers=new ArrayList<CustomerOrder>();
 
@@ -72,10 +72,9 @@ public class CardUtils {
         BufferedReader in=new BufferedReader(file);
     ){
         in.readLine(); //Ignoring the column header for the file; COME BACK
-        String line=in.readLine();
-        while(line != null){
+        String line;
+        while((line=in.readLine()) != null){
             customers.add(stringToCustomerOrder(line, layers));
-            line=in.readLine();
         }
     }
     catch(FileNotFoundException e){
@@ -89,7 +88,7 @@ public class CardUtils {
     return customers;
    }
 
-   private static ArrayList<Ingredient> stringToIngredients(String str){
+   private static List<Ingredient> stringToIngredients(String str){
     str=str.strip();
     String[] values=str.split(", ");
     ArrayList<Ingredient> list=new ArrayList<Ingredient>();
@@ -99,7 +98,7 @@ public class CardUtils {
     return list;
    }
    
-   private static ArrayList<Layer> stringToLayers(String str){
+   private static List<Layer> stringToLayers(String str){
     str=str.strip();
     String[] values=str.split(", ");
     String[] ing_str=values[1].split("; ");
@@ -117,7 +116,9 @@ public class CardUtils {
     return list;
    }
 
-   private static CustomerOrder stringToCustomerOrder(String str, ArrayList<Layer> layers){
+   private static CustomerOrder stringToCustomerOrder(String str, Collection<Layer> layers){
+    ArrayList<Layer> layer_list=new ArrayList<Layer>(layers);
+    
     str=str.strip();
     String[] items=str.split(", ");
     String[] recipes=items[2].split("; ");
@@ -131,9 +132,9 @@ public class CardUtils {
     for(int j=0;j<recipes.length;j++){
         String item=recipes[j];
         boolean isLayer=false;
-        for(int i=0; i<layers.size();i++){
-            if(layers.get(i).toString().equals(item)){
-                recipe_list.addAll(layers.get(i).getRecipe());
+        for(int i=0; i<layer_list.size();i++){
+            if(layer_list.get(i).toString().equals(item)){
+                recipe_list.addAll(layer_list.get(i).getRecipe());
                 isLayer=true;
                 break;
             }
@@ -147,8 +148,8 @@ public class CardUtils {
         String item=garnishes[j];
         boolean isLayer=false;
         for(int i=0;i<layers.size();i++){
-            if(layers.get(i).toString().equals(item)){
-                garnish_list.addAll(layers.get(i).getRecipe());
+            if(layer_list.get(i).toString().equals(item)){
+                garnish_list.addAll(layer_list.get(i).getRecipe());
                 isLayer=true;
                 break;
             }
