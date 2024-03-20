@@ -44,14 +44,14 @@ public class ConsoleUtils {
 
     public CustomerOrder promptForCustomer(String prompt, Collection<CustomerOrder> customers){
         
-        ArrayList<CustomerOrder> customer_list=new ArrayList<CustomerOrder>(customers);
-        if(customer_list.size()==0){
+        //ArrayList<CustomerOrder> customer_list=new ArrayList<CustomerOrder>(customers);
+        if(customers.size()==0){
             return null;
         }
-        if(customer_list.size()==1){
-            return customer_list.get(0);
+        if(customers.size()==1){
+            return ((ArrayList<CustomerOrder>)customers).get(0);
         }
-        return (CustomerOrder) promptEnumerateCollection(prompt, new ArrayList<Object>(customer_list)); 
+        return (CustomerOrder) promptEnumerateCollection(prompt, new ArrayList<Object>(customers)); 
     }
 
     public Player promptForExistingPlayer(String prompt, MagicBakery bakery){
@@ -74,14 +74,14 @@ public class ConsoleUtils {
     }
 
     public Ingredient promptForIngredient(String prompt, Collection<Ingredient> ingredients){
-        ArrayList<Ingredient> ingredient_list=new ArrayList<Ingredient>(ingredients);
-        if(ingredient_list.size()==0){
+        //ArrayList<Ingredient> ingredient_list=new ArrayList<Ingredient>(ingredients);
+        if(ingredients.size()==0){
             return null;
         }
-        if(ingredient_list.size()==1){
-            return ingredient_list.get(0);
+        if(ingredients.size()==1){
+            return ((ArrayList<Ingredient>)ingredients).get(0);
         }
-        return (Ingredient) promptEnumerateCollection(prompt, new ArrayList<Object>(ingredient_list));
+        return (Ingredient) promptEnumerateCollection(prompt, new ArrayList<Object>(ingredients));
 
     }
 

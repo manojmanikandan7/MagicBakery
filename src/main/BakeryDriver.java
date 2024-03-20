@@ -25,7 +25,9 @@ public class BakeryDriver {
             System.out.println("The current player: "+currentplayer);
             System.out.println(ob.getActionsRemaining());
             Player player=in.promptForExistingPlayer("Enter the name of the user to pass the card to: ", ob);
-            ob.passCard(in.promptForIngredient("Enter the ingredient to pass to the other user: ", currentplayer.getHand()), player);
+            Ingredient ingredient=in.promptForIngredient("Enter the ingredient to pass to the other user: ", currentplayer.getHand());
+            currentplayer.removeFromHand(ingredient);
+            ob.passCard(ingredient, player);
             System.out.println(currentplayer.getHand());
             System.out.println(player.getHand());
 

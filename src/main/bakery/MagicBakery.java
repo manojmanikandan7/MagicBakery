@@ -1,9 +1,14 @@
 package bakery;
 
 import java.util.Collection;
-import java.util.ArrayDeque;
+import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Stack;
+import java.util.Random;
 import java.io.File;
+
 
 
 public class MagicBakery {
@@ -21,10 +26,16 @@ public class MagicBakery {
     private Collection<Ingredient> pantry;
     private Collection<Ingredient> pantryDeck;
     private Collection<Ingredient> pantryDiscard;
+    private Random random;
     
     private int action_count;
     public Player firstPlayer;
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile){
+        players=new ArrayDeque<Player>();
+        action_count=0;
+        random=new Random(seed);
+        pantryDeck=new Stack<Ingredient>();
+        pantry=new ArrayList<Ingredient>();
         /* Ingredient Flour=new Ingredient("Flour");
         Ingredient Sugar=new Ingredient("Sugar");
         Ingredient Eggs=new Ingredient("Eggs");
@@ -42,8 +53,7 @@ public class MagicBakery {
         CustomerOrder order1=new CustomerOrder("order1", Layer1.getRecipe(), ingredients, 1);
 
         System.out.println(order1.getRecipeDescription()+"\n"+order1.getGarnishDescription()); */
-        players=new ArrayDeque<Player>();
-        action_count=0;
+        
 
         
 
@@ -86,15 +96,21 @@ public class MagicBakery {
     }
 
     private Ingredient drawFromPantryDeck(){
-        return null;
+        return ((Stack<Ingredient>)pantryDeck).pop();
     }
 
-    public void drawFromPantry(String IngredientName){
-
+    public void drawFromPantry(String ingredientName){
+        if(pantry.contains(new Ingredient(ingredientName))){
+            pantry.remove(new Ingredient(ingredientName));
+            action_count++;
+        }
     }
 
     public void drawFromPantry(Ingredient ingredient){
-
+        if(pantry.contains(ingredient)){
+            pantry.remove(ingredient);
+            action_count++;
+        }
     }
 
     public boolean endTurn(){
@@ -139,8 +155,7 @@ public class MagicBakery {
     }
 
     public Player getCurrentPlayer(){
-        ArrayDeque<Player> playerlist=new ArrayDeque<Player>(players);
-        return playerlist.peek();
+        return ((ArrayDeque<Player>)players).peek();
     }
 
     /* public Customers getCustomers(){
@@ -161,7 +176,7 @@ public class MagicBakery {
     }
 
     public Collection<Ingredient> getPantry(){
-        return null;
+        return pantry;
     }
 
     public Collection<Player> getPlayers(){
@@ -186,7 +201,10 @@ public class MagicBakery {
     }
 
     public void refreshPantry(){
-
+        pantry.clear();
+        for(int i=0; i<5; i++){
+            pantry.add(drawFromPantryDeck());
+        }
     }
 
     public void saveState(File file){
@@ -197,6 +215,18 @@ public class MagicBakery {
         firstPlayer=new Player(playerNames.get(0));
         for(String p:playerNames){
             players.add(new Player(p));
+        }
+
+        Collections.shuffle((List<Ingredient>)pantryDeck, random);
+
+        for(int i=0; i<5; i++){
+            pantry.add(drawFromPantryDeck());
+        }
+
+        for(Player player:players){
+            for(int i=0; i<3; i++){
+                player.addToHand(drawFromPantryDeck());
+            }
         }
         
     }
