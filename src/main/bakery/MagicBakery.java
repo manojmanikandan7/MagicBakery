@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.ArrayDeque;
 import java.util.Stack;
+import java.util.HashSet;
 import java.util.Random;
 import java.io.File;
 
-
+import util.StringUtils;
+import util.CardUtils;
+import util.ConsoleUtils;
 
 public class MagicBakery {
     public enum ActionType{
@@ -31,11 +34,14 @@ public class MagicBakery {
     private int action_count;
     public Player firstPlayer;
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile){
-        players=new ArrayDeque<Player>();
         action_count=0;
+        players=new ArrayDeque<Player>(); 
+        pantry=new ArrayList<Ingredient>();
+        pantryDiscard=new Stack<Ingredient>();
         random=new Random(seed);
         pantryDeck=new Stack<Ingredient>();
-        pantry=new ArrayList<Ingredient>();
+        pantryDeck.addAll(CardUtils.readIngredientFile(ingredientDeckFile));
+        layers=CardUtils.readLayerFile(layerDeckFile);
         /* Ingredient Flour=new Ingredient("Flour");
         Ingredient Sugar=new Ingredient("Sugar");
         Ingredient Eggs=new Ingredient("Eggs");
@@ -92,7 +98,15 @@ public class MagicBakery {
     }
 
     public void bakeLayer(Layer layer){
-
+        if(getBakeableLayers().contains(layer)){
+            for(Ingredient ingredient:layer.getRecipe()){
+                getCurrentPlayer().removeFromHand(ingredient);
+                pantryDiscard.add(ingredient);
+            }
+            layers.remove(layer);
+            getCurrentPlayer().addToHand(layer);
+            action_count++;
+        }
     }
 
     private Ingredient drawFromPantryDeck(){
@@ -102,6 +116,7 @@ public class MagicBakery {
     public void drawFromPantry(String ingredientName){
         if(pantry.contains(new Ingredient(ingredientName))){
             pantry.remove(new Ingredient(ingredientName));
+            getCurrentPlayer().addToHand(new Ingredient(ingredientName));
             action_count++;
         }
     }
@@ -109,6 +124,7 @@ public class MagicBakery {
     public void drawFromPantry(Ingredient ingredient){
         if(pantry.contains(ingredient)){
             pantry.remove(ingredient);
+            getCurrentPlayer().addToHand(ingredient);
             action_count++;
         }
     }
@@ -151,7 +167,23 @@ public class MagicBakery {
     }
 
     public Collection<Layer> getBakeableLayers(){
-        return null;
+        Collection<Layer> bakeable_layers=new ArrayList<Layer>();
+        for(Layer layer:getLayers()){
+            List<Ingredient> recipe=layer.getRecipe();
+            int count=recipe.size();
+            for(Ingredient ingredient:getCurrentPlayer().getHand()){
+                if(recipe.contains(ingredient)){
+                    count--;
+                }
+            }
+            if(count==0){
+                bakeable_layers.add(layer);
+            }
+            if(count==1 && getCurrentPlayer().getHand().contains(Ingredient.HELPFUL_DUCK)){
+                bakeable_layers.add(layer);
+            }
+        }
+        return bakeable_layers;
     }
 
     public Player getCurrentPlayer(){
@@ -172,7 +204,12 @@ public class MagicBakery {
     }
 
     public Collection<Layer> getLayers(){
-        return null;
+        HashSet<Layer> unique_layers=new HashSet<Layer>();
+        for(Layer layer:layers){
+            unique_layers.add(layer);
+        }
+        return unique_layers;
+        
     }
 
     public Collection<Ingredient> getPantry(){
@@ -188,6 +225,7 @@ public class MagicBakery {
     }
 
     public void passCard(Ingredient ingredient, Player recipient){
+        getCurrentPlayer().removeFromHand(ingredient);
         recipient.addToHand(ingredient);
         action_count++;
     }
@@ -197,14 +235,23 @@ public class MagicBakery {
     }
 
     public void printGameState(){
-
+        System.out.println("Layers: ");
+        for(String line:StringUtils.layersToStrings(getLayers())){
+            System.out.println(line);
+        }
+        System.out.println("Pantry: ");
+        for(String line:StringUtils.ingredientsToStrings(pantry)){
+            System.out.println(line);
+        }
     }
 
     public void refreshPantry(){
+        pantryDiscard.addAll(pantry);
         pantry.clear();
         for(int i=0; i<5; i++){
             pantry.add(drawFromPantryDeck());
         }
+        action_count++;
     }
 
     public void saveState(File file){
@@ -217,6 +264,7 @@ public class MagicBakery {
             players.add(new Player(p));
         }
 
+        
         Collections.shuffle((List<Ingredient>)pantryDeck, random);
 
         for(int i=0; i<5; i++){

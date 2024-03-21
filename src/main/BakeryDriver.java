@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import bakery.Ingredient;
 import bakery.MagicBakery;
 import bakery.Player;
+import bakery.MagicBakery.ActionType;
 import util.ConsoleUtils;
 
 public class BakeryDriver {
@@ -12,25 +13,41 @@ public class BakeryDriver {
 
     public static void main(String[] args)  {
         
-        MagicBakery ob=new MagicBakery(10, "../../io/ingredients.csv" , "../../io/layers.csv");
+        MagicBakery ob=new MagicBakery(27, "../../io/ingredients.csv" , "../../io/layers.csv");
         ConsoleUtils in=new ConsoleUtils();
         ArrayList<String> playerstr=new ArrayList<String>(in.promptForNewPlayers("Who's playing?"));
         ob.startGame(playerstr, null);
-        ob.getCurrentPlayer().addToHand(new Ingredient("flour"));
-        ob.getCurrentPlayer().addToHand(new Ingredient("chocolate"));        
-        ob.getCurrentPlayer().addToHand(new Ingredient("butter"));
         for(int i=0;i<20;i++){
-            ob.endTurn();
             Player currentplayer=ob.getCurrentPlayer();
             System.out.println("The current player: "+currentplayer);
-            System.out.println(ob.getActionsRemaining());
-            Player player=in.promptForExistingPlayer("Enter the name of the user to pass the card to: ", ob);
-            Ingredient ingredient=in.promptForIngredient("Enter the ingredient to pass to the other user: ", currentplayer.getHand());
-            currentplayer.removeFromHand(ingredient);
-            ob.passCard(ingredient, player);
-            System.out.println(currentplayer.getHand());
-            System.out.println(player.getHand());
-
+            System.out.println("Actions remaining for this round: "+ob.getActionsRemaining());
+            ActionType action=in.promptForAction("What action do you want do?", ob);
+            Ingredient ingredient;
+            switch(action){
+                case DRAW_INGREDIENT:
+                    ingredient=in.promptForIngredient("Which ingredient do you want to draw: ",ob.getPantry());
+                    ob.drawFromPantry(ingredient);
+                    break;
+                case PASS_INGREDIENT:
+                    Player player=in.promptForExistingPlayer("Enter the name of the user to pass the card to: ", ob);
+                    ingredient=in.promptForIngredient("Enter the ingredient to pass to the other user: ", currentplayer.getHand());
+                    ob.passCard(ingredient, player);
+                    break;
+                case BAKE_LAYER:
+                    break;
+                case FULFIL_ORDER:
+                    break;
+                case REFRESH_PANTRY:
+                    ob.refreshPantry();
+                    System.out.println("Pantry Refreshed!");
+                    ob.printGameState();
+                    break;
+                default:
+                    System.out.println("Wrong choice!");
+            }
+            if(ob.endTurn()){
+                ob.printGameState();
+            }
         }
     }
 

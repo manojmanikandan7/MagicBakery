@@ -38,8 +38,15 @@ public class ConsoleUtils {
         for(ActionType action:ActionType.values()){
             actions.add(action);
         }
+        ArrayList<String> actionlist=new ArrayList<String>();
+        actionlist.add("Draw an ingredient from the pantry.");
+        actionlist.add("Pass an ingredient to another player.");
+        actionlist.add("Bake a layer.");
+        actionlist.add("Fulfill an order.");
+        actionlist.add("Refresh the pantry.");
 
-        return (ActionType) promptEnumerateCollection(prompt, new ArrayList<Object>(actions));
+        String option=(String) promptEnumerateCollection(prompt, new ArrayList<Object>(actionlist));
+        return actions.get(actionlist.indexOf(option));
     }
 
     public CustomerOrder promptForCustomer(String prompt, Collection<CustomerOrder> customers){
