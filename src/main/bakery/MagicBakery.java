@@ -12,7 +12,6 @@ import java.io.File;
 
 import util.StringUtils;
 import util.CardUtils;
-import util.ConsoleUtils;
 
 public class MagicBakery {
     public enum ActionType{
@@ -23,7 +22,7 @@ public class MagicBakery {
         REFRESH_PANTRY
     }
 
-    //private Customers customers;
+    private Customers customers;
     private Collection<Layer> layers;
     private Collection<Player> players;
     private Collection<Ingredient> pantry;
@@ -33,15 +32,18 @@ public class MagicBakery {
     
     private int action_count;
     public Player firstPlayer;
+
+    private static long serialVersionUID;
+    
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile){
-        action_count=0;
-        players=new ArrayDeque<Player>(); 
-        pantry=new ArrayList<Ingredient>();
-        pantryDiscard=new Stack<Ingredient>();
-        random=new Random(seed);
-        pantryDeck=new Stack<Ingredient>();
-        pantryDeck.addAll(CardUtils.readIngredientFile(ingredientDeckFile));
-        layers=CardUtils.readLayerFile(layerDeckFile);
+        this.action_count=0;
+        this.players=new ArrayDeque<Player>(); 
+        this.pantry=new ArrayList<Ingredient>();
+        this.pantryDiscard=new Stack<Ingredient>();
+        this.random=new Random(seed);
+        this.pantryDeck=new Stack<Ingredient>();
+        this.pantryDeck.addAll(CardUtils.readIngredientFile(ingredientDeckFile));
+        this.layers=CardUtils.readLayerFile(layerDeckFile);
         /* Ingredient Flour=new Ingredient("Flour");
         Ingredient Sugar=new Ingredient("Sugar");
         Ingredient Eggs=new Ingredient("Eggs");
@@ -101,31 +103,31 @@ public class MagicBakery {
         if(getBakeableLayers().contains(layer)){
             for(Ingredient ingredient:layer.getRecipe()){
                 getCurrentPlayer().removeFromHand(ingredient);
-                pantryDiscard.add(ingredient);
+                this.pantryDiscard.add(ingredient);
             }
-            layers.remove(layer);
+            this.layers.remove(layer);
             getCurrentPlayer().addToHand(layer);
-            action_count++;
+            this.action_count++;
         }
     }
 
     private Ingredient drawFromPantryDeck(){
-        return ((Stack<Ingredient>)pantryDeck).pop();
+        return ((Stack<Ingredient>)this.pantryDeck).pop();
     }
 
     public void drawFromPantry(String ingredientName){
-        if(pantry.contains(new Ingredient(ingredientName))){
-            pantry.remove(new Ingredient(ingredientName));
+        if(this.pantry.contains(new Ingredient(ingredientName))){
+            this.pantry.remove(new Ingredient(ingredientName));
             getCurrentPlayer().addToHand(new Ingredient(ingredientName));
-            action_count++;
+            this.action_count++;
         }
     }
 
     public void drawFromPantry(Ingredient ingredient){
-        if(pantry.contains(ingredient)){
-            pantry.remove(ingredient);
+        if(this.pantry.contains(ingredient)){
+            this.pantry.remove(ingredient);
             getCurrentPlayer().addToHand(ingredient);
-            action_count++;
+            this.action_count++;
         }
     }
 
@@ -134,12 +136,12 @@ public class MagicBakery {
             return false;
         }
         Player currentPlayer=getCurrentPlayer();
-        players.remove(currentPlayer);
-        if(getCurrentPlayer().toString().equals(firstPlayer.toString())){
+        this.players.remove(currentPlayer);
+        if(getCurrentPlayer().toString().equals(this.firstPlayer.toString())){
             System.out.println("New Round");
         }
-        players.add(currentPlayer);
-        action_count=0;
+        this.players.add(currentPlayer);
+        this.action_count=0;
         return true;
     }
 
@@ -148,7 +150,7 @@ public class MagicBakery {
     }
 
     public int getActionsPermitted(){
-        if(players.size()<=3){
+        if(this.players.size()<=3){
             return 3;
         }
         else{
@@ -158,7 +160,7 @@ public class MagicBakery {
 
     public int getActionsRemaining(){
         
-        int actions_remaining=getActionsPermitted()-action_count;
+        int actions_remaining=getActionsPermitted()-this.action_count;
 
         if(actions_remaining<0){
             throw new TooManyActionsException();
@@ -179,20 +181,28 @@ public class MagicBakery {
             if(count==0){
                 bakeable_layers.add(layer);
             }
-            if(count==1 && getCurrentPlayer().getHand().contains(Ingredient.HELPFUL_DUCK)){
-                bakeable_layers.add(layer);
+            else{
+                int duck_count=0;
+                for(Ingredient ingredient: getCurrentPlayer().getHand()){
+                    if(ingredient.equals(Ingredient.HELPFUL_DUCK)){
+                        duck_count++;
+                    }
+                }
+                if(duck_count==count){
+                    bakeable_layers.add(layer);
+                }
             }
         }
         return bakeable_layers;
     }
 
     public Player getCurrentPlayer(){
-        return ((ArrayDeque<Player>)players).peek();
+        return ((ArrayDeque<Player>)this.players).peek();
     }
 
-    /* public Customers getCustomers(){
+    public Customers getCustomers(){
         return null;
-    } */
+    }
 
     public Collection<CustomerOrder> getFulfillableCustomers(){
         return null;
@@ -205,7 +215,7 @@ public class MagicBakery {
 
     public Collection<Layer> getLayers(){
         HashSet<Layer> unique_layers=new HashSet<Layer>();
-        for(Layer layer:layers){
+        for(Layer layer:this.layers){
             unique_layers.add(layer);
         }
         return unique_layers;
@@ -213,11 +223,11 @@ public class MagicBakery {
     }
 
     public Collection<Ingredient> getPantry(){
-        return pantry;
+        return this.pantry;
     }
 
     public Collection<Player> getPlayers(){
-        return players;
+        return this.players;
     }
 
     public static MagicBakery loadState(File file){
@@ -227,7 +237,7 @@ public class MagicBakery {
     public void passCard(Ingredient ingredient, Player recipient){
         getCurrentPlayer().removeFromHand(ingredient);
         recipient.addToHand(ingredient);
-        action_count++;
+        this.action_count++;
     }
 
     public void printCustomerServiceRecord(){
@@ -240,18 +250,18 @@ public class MagicBakery {
             System.out.println(line);
         }
         System.out.println("Pantry: ");
-        for(String line:StringUtils.ingredientsToStrings(pantry)){
+        for(String line:StringUtils.ingredientsToStrings(this.pantry)){
             System.out.println(line);
         }
     }
 
     public void refreshPantry(){
-        pantryDiscard.addAll(pantry);
-        pantry.clear();
+        this.pantryDiscard.addAll(this.pantry);
+        this.pantry.clear();
         for(int i=0; i<5; i++){
-            pantry.add(drawFromPantryDeck());
+            this.pantry.add(drawFromPantryDeck());
         }
-        action_count++;
+        this.action_count++;
     }
 
     public void saveState(File file){
@@ -259,23 +269,29 @@ public class MagicBakery {
     }
 
     public void startGame(List<String> playerNames, String customerDeckFile){
-        firstPlayer=new Player(playerNames.get(0));
+        this.firstPlayer=new Player(playerNames.get(0));
         for(String p:playerNames){
-            players.add(new Player(p));
+            this.players.add(new Player(p));
         }
 
-        
-        Collections.shuffle((List<Ingredient>)pantryDeck, random);
+        Collections.shuffle((List<Ingredient>)this.pantryDeck, this.random);
 
         for(int i=0; i<5; i++){
-            pantry.add(drawFromPantryDeck());
+            this.pantry.add(drawFromPantryDeck());
         }
 
-        for(Player player:players){
+        for(Player player: players){
+            player.addToHand(new Ingredient("eggs"));
+            //player.addToHand(new Ingredient("sugar"));
+            player.addToHand(Ingredient.HELPFUL_DUCK);
+            player.addToHand(new Ingredient("butter"));
+        }
+
+        /* for(Player player:this.players){
             for(int i=0; i<3; i++){
                 player.addToHand(drawFromPantryDeck());
             }
-        }
+        } */
         
     }
 }

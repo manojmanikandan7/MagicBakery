@@ -16,6 +16,8 @@ public class CustomerOrder {
     private List<Ingredient> recipe;
     private CustomerOrderStatus status;
 
+    private static long serialVersionUID;
+
     public CustomerOrder(String name, List<Ingredient> recipe, List<Ingredient> garnish, int level){
             this.name=name;
             this.recipe=recipe;
@@ -25,7 +27,7 @@ public class CustomerOrder {
     }
 
     public void abandon(){
-        status=CustomerOrderStatus.GIVEN_UP;
+        setStatus(CustomerOrderStatus.GIVEN_UP);
     }
     
     public boolean canFulfill(List<Ingredient> ingredients){

@@ -93,7 +93,12 @@ public class CardUtils {
     String[] values=str.split(", ");
     ArrayList<Ingredient> list=new ArrayList<Ingredient>();
     for(int i = 0; i < Integer.parseInt(values[1]); i++){
-        list.add(new Ingredient(values[0]));
+        if(values[0].equals("helpful duck 𓅭")){
+            list.add(Ingredient.HELPFUL_DUCK);
+        }
+        else{
+            list.add(new Ingredient(values[0]));
+        }
     }
     return list;
    }

@@ -34,7 +34,7 @@ public class BakeryDriver {
                     ob.passCard(ingredient, player);
                     break;
                 case BAKE_LAYER:
-                    break;
+                    System.out.println(ob.getBakeableLayers());
                 case FULFIL_ORDER:
                     break;
                 case REFRESH_PANTRY:

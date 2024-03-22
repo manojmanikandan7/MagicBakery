@@ -15,6 +15,8 @@ public class Customers {
     private Collection<CustomerOrder> customerDeck;
     private List<CustomerOrder> inactiveCustomers;
     private Random random;
+
+    private static long serialVersionUID;
     
     public Customers(String deckFile, Random random, Collection<Layer> layers, int numPlayers){
         initialiseCustomerDeck(deckFile, layers, numPlayers);
@@ -33,15 +35,15 @@ public class Customers {
     }
 
     public CustomerOrder drawCustomer(){
-        return ((Stack<CustomerOrder>)customerDeck).pop();
+        return ((Stack<CustomerOrder>)this.customerDeck).pop();
     }
 
     public Collection<CustomerOrder> getActiveCustomers(){
-        return activeCustomers;
+        return this.activeCustomers;
     }
 
     public Collection<CustomerOrder> getCustomerDeck(){
-        return customerDeck;
+        return this.customerDeck;
     }
 
     public Collection<CustomerOrder> getFulfillable(List<Ingredient> hand){
@@ -99,23 +101,23 @@ public class Customers {
             for(int j=0; j<nums[i]; j++){
                 switch (i) {
                     case 0:
-                        customerDeck.add(level1.pop());
+                        this.customerDeck.add(level1.pop());
                         break;
                     case 1:
-                        customerDeck.add(level2.pop());
+                        this.customerDeck.add(level2.pop());
                         break; 
                     case 2:
-                        customerDeck.add(level3.pop());
+                        this.customerDeck.add(level3.pop());
                         break;
                 }
             }
 
         }
-        Collections.shuffle(((List<CustomerOrder>)customerDeck), random);
+        Collections.shuffle(((List<CustomerOrder>)this.customerDeck), this.random);
     }
 
     public boolean isEmpty(){
-        return activeCustomers.isEmpty();
+        return this.activeCustomers.isEmpty();
     }
 
     public CustomerOrder peek(){
@@ -123,16 +125,16 @@ public class Customers {
             return null;
         }
         else{
-            return ((LinkedList<CustomerOrder>)activeCustomers).peek();
+            return ((LinkedList<CustomerOrder>)this.activeCustomers).peek();
         }
     }
 
     public void remove(CustomerOrder customer){
-        activeCustomers.remove(customer); //Should not blindly remove. COME BACK.
+        this.activeCustomers.remove(customer); //Should not blindly remove. COME BACK.
     }
 
     public int size(){
-        return activeCustomers.size();  
+        return this.activeCustomers.size();  
     }
 
     public CustomerOrder timePasses(){

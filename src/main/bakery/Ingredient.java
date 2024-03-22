@@ -7,6 +7,8 @@ public class Ingredient implements Comparable<Ingredient>{
     private String name;
     public static final Ingredient HELPFUL_DUCK=new Ingredient("helpful duck 𓅭");
 
+    private static long serialVersionUID;
+
     public Ingredient(String name){
         this.name=name;
     }
