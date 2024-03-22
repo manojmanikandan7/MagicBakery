@@ -34,7 +34,7 @@ public class MagicBakery implements Serializable{
     private int action_count;
     public Player firstPlayer;
 
-    private static final long serialVersionUID=42L;;
+    private static final long serialVersionUID=42L;
     
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile){
         this.action_count=0;

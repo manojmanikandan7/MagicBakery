@@ -17,7 +17,7 @@ public class CustomerOrder implements Serializable{
     private List<Ingredient> recipe;
     private CustomerOrderStatus status;
 
-    private static final long serialVersionUID=42L;;
+    private static final long serialVersionUID=42L;
     
     /**
      * Constructor to initialise the name, recipe, garnish and level of a Customer Order.
