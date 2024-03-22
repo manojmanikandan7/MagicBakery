@@ -9,11 +9,12 @@ import java.util.Stack;
 import java.util.HashSet;
 import java.util.Random;
 import java.io.File;
+import java.io.Serializable;
 
 import util.StringUtils;
 import util.CardUtils;
 
-public class MagicBakery {
+public class MagicBakery implements Serializable{
     public enum ActionType{
         DRAW_INGREDIENT,
         PASS_INGREDIENT,
@@ -33,7 +34,7 @@ public class MagicBakery {
     private int action_count;
     public Player firstPlayer;
 
-    private static long serialVersionUID;
+    private static final long serialVersionUID=42L;;
     
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile){
         this.action_count=0;

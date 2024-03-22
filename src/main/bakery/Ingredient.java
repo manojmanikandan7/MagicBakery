@@ -2,12 +2,13 @@ package bakery;
 
 import java.lang.Object;
 import java.lang.Comparable;
+import java.io.Serializable;
 
-public class Ingredient implements Comparable<Ingredient>{
+public class Ingredient implements Comparable<Ingredient>, Serializable{
     private String name;
     public static final Ingredient HELPFUL_DUCK=new Ingredient("helpful duck 𓅭");
 
-    private static long serialVersionUID;
+    private static final long serialVersionUID=42L;;
 
     public Ingredient(String name){
         this.name=name;

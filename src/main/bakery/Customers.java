@@ -6,17 +6,18 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.Random;
+import java.io.Serializable;
 
 import util.CardUtils;
 import bakery.CustomerOrder.CustomerOrderStatus;
 
-public class Customers {
+public class Customers implements Serializable{
     private Collection<CustomerOrder> activeCustomers;
     private Collection<CustomerOrder> customerDeck;
     private List<CustomerOrder> inactiveCustomers;
     private Random random;
 
-    private static long serialVersionUID;
+    private static final long serialVersionUID=42L;;
     
     public Customers(String deckFile, Random random, Collection<Layer> layers, int numPlayers){
         initialiseCustomerDeck(deckFile, layers, numPlayers);

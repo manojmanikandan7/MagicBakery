@@ -2,12 +2,13 @@ package bakery;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
-public class Player {
+public class Player implements Serializable{
     private List<Ingredient> hand;
     private String name;
 
-    private static long serialVersionUID;
+    private static final long serialVersionUID=42L;
 
     public Player(String name){
         this.name=name;

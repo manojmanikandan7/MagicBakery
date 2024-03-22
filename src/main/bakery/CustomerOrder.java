@@ -1,8 +1,9 @@
 package bakery;
 
 import java.util.List;
+import java.io.Serializable;
 
-public class CustomerOrder {
+public class CustomerOrder implements Serializable{
     public enum CustomerOrderStatus{
         WAITING, 
         FULFILLED,
@@ -16,8 +17,16 @@ public class CustomerOrder {
     private List<Ingredient> recipe;
     private CustomerOrderStatus status;
 
-    private static long serialVersionUID;
-
+    private static final long serialVersionUID=42L;;
+    
+    /**
+     * Constructor to initialise the name, recipe, garnish and level of a Customer Order.
+     *
+     * @param name The name of the Dish for the Customer Order.
+     * @param recipe The List of Ingredients needed to make the the Customer Order.
+     * @param garnish The List of Ingredients needed to garnish the Customer Order.
+     * @param level The difficulty level of the Customer Order.
+     */
     public CustomerOrder(String name, List<Ingredient> recipe, List<Ingredient> garnish, int level){
             this.name=name;
             this.recipe=recipe;
@@ -26,14 +35,29 @@ public class CustomerOrder {
             this.status=CustomerOrderStatus.WAITING;
     }
 
+    /**
+     * Sets the status of the customer order to "GIVEN_UP".
+     */
     public void abandon(){
         setStatus(CustomerOrderStatus.GIVEN_UP);
     }
     
+    /**
+     * Checks if the Customer Order can be fulfilled with the given list of ingredients.
+     *
+     * @param ingredients the list of ingredients to check against the Customer Order
+     * @return true if the Customer Order can be fulfilled, false otherwise
+     */
     public boolean canFulfill(List<Ingredient> ingredients){
         return false;
     }
 
+    /**
+     * Checks if the Customer Order can be garnished with the given list of ingredients.
+     *
+     * @param ingredients the list of ingredients to check against the Customer Order
+     * @return true if the Customer Order can be fulfilled, false otherwise
+     */
     public boolean canGarnish(List<Ingredient> ingredients){
         return false;
     }

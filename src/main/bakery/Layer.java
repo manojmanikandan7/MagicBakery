@@ -5,7 +5,7 @@ import java.util.List;
 public class Layer extends Ingredient{
     private List<Ingredient> recipe;
 
-    private static long serialVersionUID;
+    private static final long serialVersionUID=42L;;
     
     public Layer(String name, List<Ingredient> recipe){
         super(name);
