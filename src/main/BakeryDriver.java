@@ -19,8 +19,6 @@ public class BakeryDriver {
         ob.startGame(playerstr, null);
         for(int i=0;i<20;i++){
             Player currentplayer=ob.getCurrentPlayer();
-            System.out.println("It's your turn "+currentplayer+"!");
-            System.out.println("Your hand contains: "+currentplayer.getHandStr());
             System.out.println("Actions remaining for this round: "+ob.getActionsRemaining());
             ActionType action=in.promptForAction("What action do you want do?", ob);
             Ingredient ingredient;
