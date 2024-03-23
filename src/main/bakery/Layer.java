@@ -9,10 +9,33 @@ public class Layer extends Ingredient{
     
     public Layer(String name, List<Ingredient> recipe){
         super(name);
+        if(recipe==null || recipe.isEmpty()) {
+            throw new WrongIngredientsException("Initialised with empty or null list of Ingredients for recipe");
+        }
         this.recipe=recipe;
     }
 
     public boolean canBake(List<Ingredient> ingredients){
+        int count=this.recipe.size();
+        for(Ingredient ingredient:this.recipe){
+            if(ingredients.contains(ingredient)){
+                count--;
+            }
+        }
+        if(count==0){
+            return true;
+        }
+        else{
+            int duck_count=0;
+            for(Ingredient ingredient: ingredients){
+                if(ingredient.equals(Ingredient.HELPFUL_DUCK)){
+                    duck_count++;
+                }
+            }
+            if(duck_count==count){
+                return true;
+            }
+        }
         return false;
     }
 

@@ -36,6 +36,9 @@ public class Player implements Serializable{
         if(hasIngredient(ingredient)){
             this.hand.remove(ingredient);
         }
+        else{
+            throw new WrongIngredientsException("Ingredient card not found in player's hand");
+        }
     }
 
     public List<Ingredient> getHand(){

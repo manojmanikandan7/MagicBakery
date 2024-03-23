@@ -13,13 +13,14 @@ public class BakeryDriver {
 
     public static void main(String[] args)  {
         
-        MagicBakery ob=new MagicBakery(27, "../../io/ingredients.csv" , "../../io/layers.csv");
+        MagicBakery ob=new MagicBakery(27, "./io/ingredients.csv" , "./io/layers.csv");
         ConsoleUtils in=new ConsoleUtils();
         ArrayList<String> playerstr=new ArrayList<String>(in.promptForNewPlayers("Who's playing?"));
         ob.startGame(playerstr, null);
         for(int i=0;i<20;i++){
             Player currentplayer=ob.getCurrentPlayer();
-            System.out.println("The current player: "+currentplayer);
+            System.out.println("It's your turn "+currentplayer+"!");
+            System.out.println("Your hand contains: "+currentplayer.getHandStr());
             System.out.println("Actions remaining for this round: "+ob.getActionsRemaining());
             ActionType action=in.promptForAction("What action do you want do?", ob);
             Ingredient ingredient;
@@ -40,14 +41,11 @@ public class BakeryDriver {
                 case REFRESH_PANTRY:
                     ob.refreshPantry();
                     System.out.println("Pantry Refreshed!");
-                    ob.printGameState();
                     break;
                 default:
                     System.out.println("Wrong choice!");
             }
-            if(ob.endTurn()){
-                ob.printGameState();
-            }
+            ob.printGameState();
         }
     }
 

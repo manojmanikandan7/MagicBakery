@@ -1,9 +1,8 @@
 package util;
 
 import java.lang.Object;
+import java.lang.IllegalArgumentException;
 import java.util.List;
-
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.io.Console;
@@ -161,6 +160,10 @@ public class ConsoleUtils {
     }
     
     private Object promptEnumerateCollection(String prompt, Collection<Object> collection){
+        if(collection==null || collection.isEmpty()){
+            throw new IllegalArgumentException("Empty or null Collection");
+        }
+        
         ArrayList<Object> list=new ArrayList<Object>(collection);
         
         System.out.println(prompt);

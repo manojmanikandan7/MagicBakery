@@ -1,5 +1,6 @@
 package bakery;
 
+import java.lang.IllegalArgumentException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +37,7 @@ public class MagicBakery implements Serializable{
 
     private static final long serialVersionUID=42L;
     
+
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile){
         this.action_count=0;
         this.players=new ArrayDeque<Player>(); 
@@ -113,22 +115,37 @@ public class MagicBakery implements Serializable{
     }
 
     private Ingredient drawFromPantryDeck(){
-        return ((Stack<Ingredient>)this.pantryDeck).pop();
+        Ingredient top=((Stack<Ingredient>)this.pantryDeck).pop();
+        if(this.pantryDeck.isEmpty()){
+            if(this.pantryDiscard.isEmpty()){
+                throw new EmptyPantryException("The pantry is empty, use the cards in your hand to bake.", new RuntimeException());
+            }
+            this.pantryDeck=this.pantryDiscard;
+            this.pantryDiscard.clear();
+            Collections.shuffle((List<Ingredient>)this.pantryDeck, this.random);
+        }
+        return top;
     }
 
     public void drawFromPantry(String ingredientName){
         if(this.pantry.contains(new Ingredient(ingredientName))){
-            this.pantry.remove(new Ingredient(ingredientName));
+            ((ArrayList<Ingredient>)this.pantry).set(((ArrayList<Ingredient>)this.pantry).indexOf(new Ingredient(ingredientName)), drawFromPantryDeck());
             getCurrentPlayer().addToHand(new Ingredient(ingredientName));
             this.action_count++;
+        }
+        else{
+            throw new WrongIngredientsException("Ingredient card not found in pantry");
         }
     }
 
     public void drawFromPantry(Ingredient ingredient){
         if(this.pantry.contains(ingredient)){
-            this.pantry.remove(ingredient);
+            ((ArrayList<Ingredient>)this.pantry).set(((ArrayList<Ingredient>)this.pantry).indexOf(ingredient), drawFromPantryDeck());
             getCurrentPlayer().addToHand(ingredient);
             this.action_count++;
+        }
+        else{
+            throw new WrongIngredientsException("Ingredient card not found in pantry");
         }
     }
 
@@ -202,7 +219,7 @@ public class MagicBakery implements Serializable{
     }
 
     public Customers getCustomers(){
-        return null;
+        return this.customers;
     }
 
     public Collection<CustomerOrder> getFulfillableCustomers(){
@@ -236,6 +253,9 @@ public class MagicBakery implements Serializable{
     }
 
     public void passCard(Ingredient ingredient, Player recipient){
+        if(!getCurrentPlayer().getHand().contains(ingredient)){
+            throw new WrongIngredientsException("Ingredient card not found in current player's hand; Cannot pass to another player");
+        }
         getCurrentPlayer().removeFromHand(ingredient);
         recipient.addToHand(ingredient);
         this.action_count++;
@@ -270,6 +290,9 @@ public class MagicBakery implements Serializable{
     }
 
     public void startGame(List<String> playerNames, String customerDeckFile){
+        if(playerNames.size()>5 || playerNames.size()<2){
+            throw new IllegalArgumentException("Invalid number of players!");
+        }
         this.firstPlayer=new Player(playerNames.get(0));
         for(String p:playerNames){
             this.players.add(new Player(p));
@@ -281,18 +304,18 @@ public class MagicBakery implements Serializable{
             this.pantry.add(drawFromPantryDeck());
         }
 
-        for(Player player: players){
+        /* for(Player player: players){
             player.addToHand(new Ingredient("eggs"));
             //player.addToHand(new Ingredient("sugar"));
             player.addToHand(Ingredient.HELPFUL_DUCK);
             player.addToHand(new Ingredient("butter"));
-        }
+        } */
 
-        /* for(Player player:this.players){
+        for(Player player:this.players){
             for(int i=0; i<3; i++){
                 player.addToHand(drawFromPantryDeck());
             }
-        } */
+        }
         
     }
 }

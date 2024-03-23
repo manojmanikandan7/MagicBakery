@@ -1,6 +1,7 @@
 package bakery;
 
 import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
@@ -22,7 +23,6 @@ public class Customers implements Serializable{
     public Customers(String deckFile, Random random, Collection<Layer> layers, int numPlayers){
         initialiseCustomerDeck(deckFile, layers, numPlayers);
         this.activeCustomers=new LinkedList<CustomerOrder>();
-        this.customerDeck=new Stack<CustomerOrder>();
         this.inactiveCustomers=new Stack<CustomerOrder>(); //COMEBACK
         this.random=random;
     }
@@ -48,14 +48,31 @@ public class Customers implements Serializable{
     }
 
     public Collection<CustomerOrder> getFulfillable(List<Ingredient> hand){
-        return null;
+        Collection<CustomerOrder> fulfillable=new ArrayList<CustomerOrder>();
+        for(CustomerOrder customer: this.activeCustomers){
+            if(hand.containsAll(customer.getRecipe())){
+                fulfillable.add(customer);
+            }
+        }
+
+        return fulfillable;
     }
 
     public Collection<CustomerOrder> getInactiveCustomersWithStatus(CustomerOrderStatus status){
-        return null;
+        
+        Collection<CustomerOrder> filtered_list=new ArrayList<CustomerOrder>();
+
+        for(CustomerOrder customer: this.inactiveCustomers){
+            if(customer.getStatus() == status){
+                filtered_list.add(customer);
+            }
+        }
+        return filtered_list;
     }
 
     private void initialiseCustomerDeck(String deckFile, Collection<Layer> layers, int numPlayers){
+        this.customerDeck=new Stack<CustomerOrder>();
+        
         Stack<CustomerOrder> list=new Stack<CustomerOrder>();
         list.addAll(CardUtils.readCustomerFile(deckFile, layers));
         Collections.shuffle(((List<CustomerOrder>)customerDeck), random);
@@ -131,11 +148,24 @@ public class Customers implements Serializable{
     }
 
     public void remove(CustomerOrder customer){
-        this.activeCustomers.remove(customer); //Should not blindly remove. COME BACK.
+        ((LinkedList<CustomerOrder>)this.activeCustomers).set(((LinkedList<CustomerOrder>)this.activeCustomers).indexOf(customer), null);
+        this.activeCustomers.remove(customer);
     }
 
     public int size(){
-        return this.activeCustomers.size();  
+        if(isEmpty()){
+            return 0;
+        }
+
+        int size=0;
+
+        for(CustomerOrder customer: this.activeCustomers){
+            if(customer!=null){
+                size++;
+            }
+        }
+
+        return size;
     }
 
     public CustomerOrder timePasses(){

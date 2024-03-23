@@ -21,6 +21,7 @@ public class CustomerOrder implements Serializable{
     
     /**
      * Constructor to initialise the name, recipe, garnish and level of a Customer Order.
+     * Throws a WrongIngredientsException if initialised with empty or null list of Ingredients for recipe.
      *
      * @param name The name of the Dish for the Customer Order.
      * @param recipe The List of Ingredients needed to make the the Customer Order.
@@ -28,11 +29,14 @@ public class CustomerOrder implements Serializable{
      * @param level The difficulty level of the Customer Order.
      */
     public CustomerOrder(String name, List<Ingredient> recipe, List<Ingredient> garnish, int level){
-            this.name=name;
-            this.recipe=recipe;
-            this.garnish=garnish;
-            this.level=level;
-            this.status=CustomerOrderStatus.WAITING;
+        if(recipe==null || recipe.isEmpty()) {
+            throw new WrongIngredientsException("Initialised with empty or null list of Ingredients for the recipe");
+        }
+        this.name=name;
+        this.recipe=recipe;
+        this.garnish=garnish;
+        this.level=level;
+        this.status=CustomerOrderStatus.WAITING;
     }
 
     /**
