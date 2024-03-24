@@ -10,6 +10,7 @@ import java.io.File;
 
 import bakery.CustomerOrder;
 import bakery.Ingredient;
+import bakery.Layer;
 import bakery.MagicBakery;
 import bakery.Player;
 import bakery.MagicBakery.ActionType;
@@ -80,7 +81,7 @@ public class ConsoleUtils {
     }
 
     public Ingredient promptForIngredient(String prompt, Collection<Ingredient> ingredients){
-        //ArrayList<Ingredient> ingredient_list=new ArrayList<Ingredient>(ingredients);
+
         if(ingredients.size()==0){
             return null;
         }
@@ -89,6 +90,17 @@ public class ConsoleUtils {
         }
         return (Ingredient) promptEnumerateCollection(prompt, new ArrayList<Object>(ingredients));
 
+    }
+
+    public Layer promptForLayer(String prompt, Collection<Layer> layers){
+
+        if(layers.size()==0){
+            return null;
+        }
+        if(layers.size()==1){
+            return ((ArrayList<Layer>)layers).get(0);
+        }
+        return (Layer) promptEnumerateCollection(prompt, new ArrayList<Object>(layers));
     }
 
     public List<String> promptForNewPlayers(String prompt){

@@ -180,7 +180,7 @@ public class MagicBakery implements Serializable{
     }
 
     /**
-     * Changes turn among players if it is the end of the turn for the current player.
+     * Changes turns among players if it is the end of the turn for the current player.
      * 
      * @return True, if it is the end of turn, False, otherwise.
      */
@@ -384,6 +384,7 @@ public class MagicBakery implements Serializable{
      * the pantry, the customer orders yet be fulfilled and the current player's hand.
      */
     public void printGameState(){
+        endTurn();
         System.out.println("Layers: ");
         for(String line:StringUtils.layersToStrings(getLayers())){
             System.out.println(line);

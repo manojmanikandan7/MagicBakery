@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 import bakery.Ingredient;
+import bakery.Layer;
 import bakery.MagicBakery;
 import bakery.Player;
 import bakery.MagicBakery.ActionType;
@@ -13,11 +14,12 @@ public class BakeryDriver {
 
     public static void main(String[] args)  {
         
-        MagicBakery ob=new MagicBakery(27, "./io/ingredients.csv" , "./io/layers.csv");
+        MagicBakery ob=new MagicBakery(27, "../../io/ingredients.csv" , "../../io/layers.csv");
         ConsoleUtils in=new ConsoleUtils();
         ArrayList<String> playerstr=new ArrayList<String>(in.promptForNewPlayers("Who's playing?"));
         ob.startGame(playerstr, null);
         for(int i=0;i<20;i++){
+            ob.printGameState();
             Player currentplayer=ob.getCurrentPlayer();
             System.out.println("Actions remaining for this round: "+ob.getActionsRemaining());
             ActionType action=in.promptForAction("What action do you want do?", ob);
@@ -31,9 +33,17 @@ public class BakeryDriver {
                     Player player=in.promptForExistingPlayer("Enter the name of the user to pass the card to: ", ob);
                     ingredient=in.promptForIngredient("Enter the ingredient to pass to the other user: ", currentplayer.getHand());
                     ob.passCard(ingredient, player);
+                    System.out.println(ingredient+" passed to "+player);
                     break;
                 case BAKE_LAYER:
-                    System.out.println(ob.getBakeableLayers());
+                    Layer layer=in.promptForLayer("Which layer do you want to bake? ", ob.getBakeableLayers());
+                    if(layer==null){
+                        System.out.println("Sorry! You don't have the ingredients to bake a layer.");
+                    }
+                    if(in.promptForYesNo("Do you want to bake "+layer+" ?")){
+                        ob.bakeLayer(layer);
+                        System.out.println(layer+" baked!");
+                    }
                 case FULFIL_ORDER:
                     break;
                 case REFRESH_PANTRY:
@@ -43,7 +53,6 @@ public class BakeryDriver {
                 default:
                     System.out.println("Wrong choice!");
             }
-            ob.printGameState();
         }
     }
 
