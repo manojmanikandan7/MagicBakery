@@ -49,6 +49,10 @@ public class MagicBakery implements Serializable{
     private Random random;
     
     private int action_count;
+
+    /**
+     * Stores the starting player of the game.
+     */
     public Player firstPlayer;
 
     private static final long serialVersionUID=42L;
