@@ -36,7 +36,7 @@ public class MagicBakery implements Serializable{
         DRAW_INGREDIENT,
         PASS_INGREDIENT,
         BAKE_LAYER,
-        FULFIL_ORDER, //Minor typo
+        FULFIL_ORDER,
         REFRESH_PANTRY
     }
 
@@ -82,7 +82,7 @@ public class MagicBakery implements Serializable{
      * @param layer The layer to bake with ingredients from the user's hand.
      */
     public void bakeLayer(Layer layer){
-        if(this.action_count<0){
+        if(getActionsRemaining()<=0){
             throw new TooManyActionsException();
         }
         if(getBakeableLayers().contains(layer)){
@@ -117,7 +117,7 @@ public class MagicBakery implements Serializable{
      * @param ingredientName Name of the ingredient to be drawn from pantry.
      */
     public void drawFromPantry(String ingredientName){
-        if(this.action_count<0){
+        if(getActionsRemaining()<=0){
             throw new TooManyActionsException();
         }
         if(this.pantry.contains(new Ingredient(ingredientName))){
@@ -136,7 +136,7 @@ public class MagicBakery implements Serializable{
      * @param ingredient ingredient to be drawn from pantry.
      */
     public void drawFromPantry(Ingredient ingredient){
-        if(this.action_count<0){
+        if(getActionsRemaining()<=0){
             throw new TooManyActionsException();
         }
         if(this.pantry.contains(ingredient)){
@@ -336,7 +336,7 @@ public class MagicBakery implements Serializable{
      * @param recipient The other player bound to receive the card.
      */
     public void passCard(Ingredient ingredient, Player recipient){
-        if(this.action_count<0){
+        if(getActionsRemaining()<=0){
             throw new TooManyActionsException();
         }
         if(!getCurrentPlayer().getHand().contains(ingredient)){
@@ -382,7 +382,7 @@ public class MagicBakery implements Serializable{
      * The discarded items are added to the pantry discard pile.
      */
     public void refreshPantry(){
-        if(this.action_count<0){
+        if(getActionsRemaining()<=0){
             throw new TooManyActionsException();
         }
         this.pantryDiscard.addAll(this.pantry);
