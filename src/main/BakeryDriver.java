@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 
 import bakery.Ingredient;
@@ -12,12 +13,12 @@ public class BakeryDriver {
     public BakeryDriver() {
     }
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) throws IOException {
         
         MagicBakery ob=new MagicBakery(27, "../../io/ingredients.csv" , "../../io/layers.csv");
         ConsoleUtils in=new ConsoleUtils();
         ArrayList<String> playerstr=new ArrayList<String>(in.promptForNewPlayers("Who's playing?"));
-        ob.startGame(playerstr, null);
+        ob.startGame(playerstr, "../../io/customers.csv");
         for(int i=0;i<20;i++){
             ob.printGameState();
             Player currentplayer=ob.getCurrentPlayer();

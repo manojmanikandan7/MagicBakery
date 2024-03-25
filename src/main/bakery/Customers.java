@@ -1,5 +1,6 @@
 package bakery;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,8 +11,16 @@ import java.util.Random;
 import java.io.Serializable;
 
 import util.CardUtils;
+import util.ConsoleUtils;
 import bakery.CustomerOrder.CustomerOrderStatus;
 
+/**
+ * A Class representing the customers of the game.
+ *
+ * @author Manoj Manikandan
+ * @version %I%, %G%
+ *
+ */
 public class Customers implements Serializable{
     private Collection<CustomerOrder> activeCustomers;
     private Collection<CustomerOrder> customerDeck;
@@ -28,15 +37,16 @@ public class Customers implements Serializable{
      * @param random the random object used to shuffle the customer deck.
      * @param layers the collection of layers used for initialising the customer deck.
      * @param numPlayers the number of players in the game.
+     * @throws IOException If there are any problems reading the file.
      */
-    public Customers(String deckFile, Random random, Collection<Layer> layers, int numPlayers){
-        initialiseCustomerDeck(deckFile, layers, numPlayers);
+    public Customers(String deckFile, Random random, Collection<Layer> layers, int numPlayers) throws IOException{
         this.activeCustomers=new LinkedList<CustomerOrder>();
         for(int i=0; i<3; i++){
             this.activeCustomers.add(null);
         }
         this.inactiveCustomers=new Stack<CustomerOrder>(); //COMEBACK
         this.random=random;
+        initialiseCustomerDeck(deckFile, layers, numPlayers);
     }
 
     /**
@@ -149,13 +159,14 @@ public class Customers implements Serializable{
      * @param deckFile The path to the customer deck file.
      * @param layers The layers available for the customer orders.
      * @param numPlayers The number of players in the game.
+     * @throws IOException If there are any problems reading the file.
      */
-    private void initialiseCustomerDeck(String deckFile, Collection<Layer> layers, int numPlayers){
+    private void initialiseCustomerDeck(String deckFile, Collection<Layer> layers, int numPlayers) throws IOException {
         this.customerDeck=new Stack<CustomerOrder>();
 
         Stack<CustomerOrder> list=new Stack<CustomerOrder>();
         list.addAll(CardUtils.readCustomerFile(deckFile, layers));
-        Collections.shuffle(((List<CustomerOrder>)customerDeck), random);
+        Collections.shuffle((list), random);
         Stack<CustomerOrder> level1=new Stack<CustomerOrder>();
         Stack<CustomerOrder> level2=new Stack<CustomerOrder>();
         Stack<CustomerOrder> level3=new Stack<CustomerOrder>();
@@ -177,11 +188,6 @@ public class Customers implements Serializable{
                 nums[1]=2;
                 nums[2]=3;
                 break;
-            default:
-                nums[0]=0;
-                nums[1]=0;
-                nums[2]=0;
-                break;
         }
         for(CustomerOrder customer:list){
             if(customer.getLevel()==1){
@@ -190,13 +196,13 @@ public class Customers implements Serializable{
             if(customer.getLevel()==2){
                 level2.add(customer);
             }
-            if(customer.getLevel()==2){
+            if(customer.getLevel()==3){
                 level3.add(customer);
             }
         }
 
-        for(int i=0; i<3; i++){
-            for(int j=0; j<nums[i]; j++){
+        for(int i=0; i<3; i++) {
+            for (int j = 0; j < nums[i]; j++) {
                 switch (i) {
                     case 0:
                         this.customerDeck.add(level1.pop());
@@ -209,7 +215,6 @@ public class Customers implements Serializable{
                         break;
                 }
             }
-
         }
         Collections.shuffle(((List<CustomerOrder>)this.customerDeck), this.random);
     }

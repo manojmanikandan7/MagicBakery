@@ -2,6 +2,13 @@ package bakery;
 
 import java.util.List;
 
+/**
+ * A Class representing the layer to make a customer order.
+ *
+ * @author Manoj Manikandan
+ * @version %I%, %G%
+ *
+ */
 public class Layer extends Ingredient{
     private List<Ingredient> recipe;
 
@@ -12,7 +19,6 @@ public class Layer extends Ingredient{
      * 
      * @param name The name of the layer.
      * @param recipe The list of ingredients needed to bake this layer.
-     * @throws WrongIngredientsException If the recipe is initialised with empty or null list of Ingredients. 
      */
     public Layer(String name, List<Ingredient> recipe){
         super(name);
@@ -45,11 +51,8 @@ public class Layer extends Ingredient{
                     duck_count++;
                 }
             }
-            if(duck_count==count){
-                return true;
-            }
+            return duck_count == count;
         }
-        return false;
     }
     /**
      * Gets the recipe for this layer.
@@ -82,10 +85,9 @@ public class Layer extends Ingredient{
 
     /**
      * Produces a hash code to be used for the hash set or hash map data structures.
-     * 
+     *
      * @return A hash code based on the name and the recipe of the layer.
      */
-    @Override
     public int hashCode(){
         return super.hashCode() * this.recipe.hashCode();
     }

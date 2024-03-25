@@ -2,6 +2,7 @@ package util;
 
 import java.lang.Object;
 import java.lang.IllegalArgumentException;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,29 +16,56 @@ import bakery.MagicBakery;
 import bakery.Player;
 import bakery.MagicBakery.ActionType;
 
+/**
+ * A Class to prompt the users for the options and selections.
+ *
+ * @author Manoj Manikandan
+ * @version %I%, %G%
+ *
+ */
 public class ConsoleUtils {
     private Console console;
 
+    /**
+     * Constructor to initialise the console object.
+     */
     public ConsoleUtils(){
-        console=System.console();
+        this.console=System.console();
     }
 
+    /**
+     * Reads a line from the console and return the line as a String.
+     * Same as the method of System.console().
+     *
+     * @return A string of the line read from the console.
+     */
     public String readLine(){
-        String line=console.readLine();
-        return line;
+        return console.readLine();
     }
 
+    /**
+     * Provides a formatted prompt, then reads a single line of text from the console.
+     * Same as the method of System.console().
+     *
+     * @param fmt A format string as described in Format string syntax.
+     * @param args Arguments referenced by the format specifiers in the format string.
+     * @return A string of the line read from the console.
+     */
     public String readLine(String fmt, Object... args){
-        String line=console.readLine(fmt, args);
-        return line;
+        return console.readLine(fmt, args);
     }
 
+    /**
+     * Prompts the user for the action they should take during their turn.
+     *
+     * @param prompt The prompt to be printed to the console.
+     * @param bakery The MagicBakery object to derive the actions from.
+     * @return An ActionType choice the player made.
+     */
     //COME BACK
     public ActionType promptForAction(String prompt, MagicBakery bakery){
         ArrayList<ActionType> actions=new ArrayList<ActionType>();
-        for(ActionType action:ActionType.values()){
-            actions.add(action);
-        }
+        Collections.addAll(actions, ActionType.values());
         ArrayList<String> actionlist=new ArrayList<String>();
         actionlist.add("Draw an ingredient from the pantry.");
         actionlist.add("Pass an ingredient to another player.");
@@ -49,10 +77,17 @@ public class ConsoleUtils {
         return actions.get(actionlist.indexOf(option));
     }
 
+    /**
+     * Prompts the user for a customer order to fulfill.
+     *
+     * @param prompt The prompt to be printed to the console.
+     * @param customers The list of customer order.
+     * @return A CustomerOrder object the user chose.
+     */
     public CustomerOrder promptForCustomer(String prompt, Collection<CustomerOrder> customers){
         
         //ArrayList<CustomerOrder> customer_list=new ArrayList<CustomerOrder>(customers);
-        if(customers.size()==0){
+        if(customers.isEmpty()){
             return null;
         }
         if(customers.size()==1){
@@ -61,6 +96,13 @@ public class ConsoleUtils {
         return (CustomerOrder) promptEnumerateCollection(prompt, new ArrayList<Object>(customers)); 
     }
 
+    /**
+     * Prompts the user for another player pass a card to.
+     *
+     * @param prompt The prompt to be printed to the console.
+     * @param bakery The MagicBakery object to get the players from.
+     * @return A Player object the user chose.
+     */
     public Player promptForExistingPlayer(String prompt, MagicBakery bakery){
 
         ArrayList<Player> players=new ArrayList<Player>(bakery.getPlayers());
@@ -74,15 +116,27 @@ public class ConsoleUtils {
         
     }
 
+    /**
+     * Prompts the user for a file path.
+     *
+     * @param prompt The prompt to be printed to the console.
+     * @return A File object representing the file path.
+     */
     public File promptForFilePath(String prompt){
         String pathname=readLine(prompt);
-        File path=new File(pathname);
-        return path;
+        return new File(pathname);
     }
 
+    /**
+     * Prompts the user to choose an ingredient.
+     *
+     * @param prompt The prompt to be printed to the console.
+     * @param ingredients The collection of ingredients to choose from.
+     * @return An Ingredient object the user chose.
+     */
     public Ingredient promptForIngredient(String prompt, Collection<Ingredient> ingredients){
 
-        if(ingredients.size()==0){
+        if(ingredients.isEmpty()){
             return null;
         }
         if(ingredients.size()==1){
@@ -92,9 +146,16 @@ public class ConsoleUtils {
 
     }
 
+    /**
+     * Prompts the user to choose a layer.
+     *
+     * @param prompt The prompt to be printed to the console.
+     * @param layers The collection of layer to choose from.
+     * @return A Layer object the user chose.
+     */
     public Layer promptForLayer(String prompt, Collection<Layer> layers){
 
-        if(layers.size()==0){
+        if(layers.isEmpty()){
             return null;
         }
         if(layers.size()==1){
@@ -103,6 +164,12 @@ public class ConsoleUtils {
         return (Layer) promptEnumerateCollection(prompt, new ArrayList<Object>(layers));
     }
 
+    /**
+     * Prompts the user for new players playing the game.
+     *
+     * @param prompt The prompt to be printed to the console.
+     * @return A List of player names the user chose.
+     */
     public List<String> promptForNewPlayers(String prompt){
         int player_number=1;
         ArrayList<String> players=new ArrayList<String>();
@@ -130,6 +197,12 @@ public class ConsoleUtils {
         return players;
     }
 
+    /**
+     * Prompts the user whether to start a new game or load an existing one.
+     *
+     * @param prompt The prompt to be printed to the console.
+     * @return True, if the user want to start a new game, false, if they want to load an existing one.
+     */
     public boolean promptForStartLoad(String prompt){
         while (true) {
             try{
@@ -150,6 +223,12 @@ public class ConsoleUtils {
         }
     }
 
+    /**
+     * Prompts the user for a yes or a no.
+     *
+     * @param prompt The prompt to be printed to the console.
+     * @return True, if yes, false, if no.
+     */
     public boolean promptForYesNo(String prompt){
         while (true) {
             try{

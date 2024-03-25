@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
 
+/**
+ * A Class representing the player of the game.
+ *
+ * @author Manoj Manikandan
+ * @version %I%, %G%
+ *
+ */
 public class Player implements Serializable{
     private List<Ingredient> hand;
     private String name;
@@ -45,19 +52,13 @@ public class Player implements Serializable{
      * @return True, if the player has the ingredient in their hand, False, otherwise
      */
     public boolean hasIngredient(Ingredient ingredient){
-        if(this.hand.contains(ingredient)){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return this.hand.contains(ingredient);
     }
 
     /**
      * Removes the ingredient from the player's hand, if present.
      *
      * @param ingredient The ingredient to be removed from the hand.
-     * @throws WrongIngredientsException If the ingredient is not found in the hand.
      */
     public void removeFromHand(Ingredient ingredient){
         if(hasIngredient(ingredient)){
@@ -86,7 +87,7 @@ public class Player implements Serializable{
      * @return the hand description as a string.
      */
     public String getHandStr(){
-        if(this.hand.size()==0){
+        if(this.hand.isEmpty()){
             return "";
         }
 

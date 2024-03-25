@@ -3,7 +3,17 @@ package bakery;
 import java.util.List;
 import java.io.Serializable;
 
+/**
+ * A Class representing the customer order of a customer.
+ *
+ * @author Manoj Manikandan
+ * @version %I%, %G%
+ *
+ */
 public class CustomerOrder implements Serializable{
+    /**
+     * The enumeration representing the status of the customer order.
+     */
     public enum CustomerOrderStatus{
         WAITING, 
         FULFILLED,
@@ -105,6 +115,11 @@ public class CustomerOrder implements Serializable{
         return description.substring(0, description.length()-2);
     }
 
+    /**
+     * Gets the level of the customerOrder.
+     *
+     * @return The level of the customer order.
+     */
     public int getLevel(){
         return level;
     }

@@ -1,6 +1,7 @@
 package bakery;
 
 import java.lang.IllegalArgumentException;
+import java.lang.ClassNotFoundException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -9,13 +10,27 @@ import java.util.ArrayDeque;
 import java.util.Stack;
 import java.util.HashSet;
 import java.util.Random;
-import java.io.File;
 import java.io.Serializable;
+import java.io.File;
+import java.io.ObjectOutputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import util.StringUtils;
-import util.CardUtils;
 
+/**
+ * A Class representing the Magic Bakery game.
+ *
+ * @author Manoj Manikandan
+ * @version %I%, %G%
+ *
+ */
 public class MagicBakery implements Serializable{
+    /**
+     * An enumeration for the actions the users can take.
+     */
     public enum ActionType{
         DRAW_INGREDIENT,
         PASS_INGREDIENT,
@@ -46,8 +61,9 @@ public class MagicBakery implements Serializable{
      * @param seed The seed to initialise the Random object, for predictive randomisation.
      * @param ingredientDeckFile The path to the file for the ingredient cards.
      * @param layerDeckFile The path to the file for the layer cards.
+     * @throws IOException If there are any problems reading the file.
      */
-    public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile){
+    public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile) throws IOException{
         this.action_count=0;
         this.players=new ArrayDeque<Player>(); 
         this.pantry=new ArrayList<Ingredient>();
@@ -56,58 +72,6 @@ public class MagicBakery implements Serializable{
         this.pantryDeck=new Stack<Ingredient>();
         this.pantryDeck.addAll(CardUtils.readIngredientFile(ingredientDeckFile));
         this.layers=CardUtils.readLayerFile(layerDeckFile);
-        /* Ingredient Flour=new Ingredient("Flour");
-        Ingredient Sugar=new Ingredient("Sugar");
-        Ingredient Eggs=new Ingredient("Eggs");
-        Ingredient Milk=new Ingredient("Milk");
-        ArrayList<Ingredient> ingredients=new ArrayList<Ingredient>();
-
-        ingredients.add(Flour);
-        ingredients.add(Sugar);
-        ingredients.add(Eggs);
-        ingredients.add(Milk);
-
-
-        Layer Layer1=new Layer("Layer1", ingredients);
-
-        CustomerOrder order1=new CustomerOrder("order1", Layer1.getRecipe(), ingredients, 1);
-
-        System.out.println(order1.getRecipeDescription()+"\n"+order1.getGarnishDescription()); */
-        
-
-        
-
-        /* startGame(null, "");
-        File path=in.promptForFilePath("Enter the file path for ingredients: ");
-        ingredientDeckFile=path.toString();
-        ArrayList<Ingredient> ingredientslist=CardUtils.readIngredientFile(ingredientDeckFile);
-
-
-        Player choice=in.promptForExistingPlayer("Choose one: ", this);
-        System.out.println(choice); */
-        /* System.out.println("Size of ingredients list: "+ingredientslist.size());
-        System.out.println("The Ingredients: ");
-        for(Ingredient ingredient:ingredientslist){
-            System.out.println(ingredient.toString());
-        }
-
-        ArrayList<Layer> layerlist=CardUtils.readLayerFile(layerDeckFile);
-
-        System.out.println("Size of layer list: "+layerlist.size());
-        System.out.println("The Layers: ");
-        for(Layer layer:layerlist){
-            System.out.println(layer.toString()+"\n"+layer.getRecipeDescription());
-        }
-
-        ArrayList<CustomerOrder> customers=CardUtils.readCustomerFile("../../io/customers.csv", layerlist);
-
-        System.out.println("Size of customers list: "+customers.size());
-        System.out.println("The customers: ");
-        for(CustomerOrder customer:customers){
-            System.out.println("Name of dish: " + customer.toString()+"\n"+
-                                "The ingredients required for the recipe: "+customer.getRecipeDescription()+"\n"+
-                                "The ingredients required for the garnish: "+customer.getGarnishDescription());
-        } */
 
     }
 
@@ -115,9 +79,11 @@ public class MagicBakery implements Serializable{
      * Bakes a layer if the ingredients are found in current player's hand. 
      * 
      * @param layer The layer to bake with ingredients from the user's hand.
-     * @throws WrongIngredientsException If the sufficient ingredients or helpful ducks are not found.
      */
     public void bakeLayer(Layer layer){
+        if(this.action_count<0){
+            throw new TooManyActionsException();
+        }
         if(getBakeableLayers().contains(layer)){
             for(Ingredient ingredient:layer.getRecipe()){
                 getCurrentPlayer().removeFromHand(ingredient);
@@ -133,7 +99,6 @@ public class MagicBakery implements Serializable{
     }
 
     private Ingredient drawFromPantryDeck(){
-        Ingredient top=((Stack<Ingredient>)this.pantryDeck).pop();
         if(this.pantryDeck.isEmpty()){
             if(this.pantryDiscard.isEmpty()){
                 throw new EmptyPantryException("The pantry is empty, use the cards in your hand to bake.", new RuntimeException());
@@ -142,16 +107,18 @@ public class MagicBakery implements Serializable{
             this.pantryDiscard.clear();
             Collections.shuffle((List<Ingredient>)this.pantryDeck, this.random);
         }
-        return top;
+        return ((Stack<Ingredient>)this.pantryDeck).pop();
     }
 
     /**
      * Draws an ingredient card with name ingredientName from the pantry and places it in the current player's hand.
-     * 
+     *
      * @param ingredientName Name of the ingredient to be drawn from pantry.
-     * @throws WrongIngredientsException If ingredient is not found in pantry.
      */
     public void drawFromPantry(String ingredientName){
+        if(this.action_count<0){
+            throw new TooManyActionsException();
+        }
         if(this.pantry.contains(new Ingredient(ingredientName))){
             ((ArrayList<Ingredient>)this.pantry).set(((ArrayList<Ingredient>)this.pantry).indexOf(new Ingredient(ingredientName)), drawFromPantryDeck());
             getCurrentPlayer().addToHand(new Ingredient(ingredientName));
@@ -166,9 +133,11 @@ public class MagicBakery implements Serializable{
      * Draws a card, ingredient, from the pantry and places it in the current player's hand.
      * 
      * @param ingredient ingredient to be drawn from pantry.
-     * @throws WrongIngredientsException If ingredient is not found in pantry.
      */
     public void drawFromPantry(Ingredient ingredient){
+        if(this.action_count<0){
+            throw new TooManyActionsException();
+        }
         if(this.pantry.contains(ingredient)){
             ((ArrayList<Ingredient>)this.pantry).set(((ArrayList<Ingredient>)this.pantry).indexOf(ingredient), drawFromPantryDeck());
             getCurrentPlayer().addToHand(ingredient);
@@ -192,6 +161,7 @@ public class MagicBakery implements Serializable{
         this.players.remove(currentPlayer);
         if(getCurrentPlayer().toString().equals(this.firstPlayer.toString())){
             System.out.println("New Round");
+            this.customers.addCustomerOrder();
         }
         this.players.add(currentPlayer);
         this.action_count=0;
@@ -202,7 +172,7 @@ public class MagicBakery implements Serializable{
      * Fulfills the customer order if fulfillable, and garnishes the order if garnish is true and if garnishable.
      * 
      * @param customer Customer Order to fulfill(and/or garnish)
-     * @param garnish Whether the order order should be garnished
+     * @param garnish Whether the order should be garnished
      * @return List of ingredients excluding the ones used to fulfill(and/or garnish) the order.
      */
     public List<Ingredient> fulfillOrder(CustomerOrder customer, boolean garnish){
@@ -229,7 +199,6 @@ public class MagicBakery implements Serializable{
      * Returns the number of actions remaining for the current player.
      *
      * @return the number of actions remaining
-     * @throws TooManyActionsException if the current player tries to make more moves after the end of his turn.
      */
     public int getActionsRemaining(){
         
@@ -299,8 +268,8 @@ public class MagicBakery implements Serializable{
      *
      * @return A collection of customer orders that can be fulfilled.
      */
-    public Collection<CustomerOrder> getFulfillableCustomers(){
-        return null;
+    public Collection<CustomerOrder> getFulfilableCustomers(){
+        return customers.getFulfilable(getCurrentPlayer().getHand());
     }
 
     /**
@@ -319,18 +288,13 @@ public class MagicBakery implements Serializable{
      * @return A collection of unique set of layers.
      */
     public Collection<Layer> getLayers(){
-        HashSet<Layer> unique_layers=new HashSet<Layer>();
-        for(Layer layer:this.layers){
-            unique_layers.add(layer);
-        }
-        return unique_layers;
-        
+        return new HashSet<Layer>(this.layers);
     }
 
     /**
      * Gets the collection of ingredients in the pantry.
      *
-     * @return the collection of ingredients in the pantry.
+     * @return The collection of ingredients in the pantry.
      */
     public Collection<Ingredient> getPantry(){
         return this.pantry;
@@ -339,7 +303,7 @@ public class MagicBakery implements Serializable{
     /**
      * Gets the collection of all the players in the game.
      *
-     * @return the collection of players.
+     * @return The collection of players.
      */
     public Collection<Player> getPlayers(){
         return this.players;
@@ -349,10 +313,19 @@ public class MagicBakery implements Serializable{
      * Loads an existing game to resume playing.
      * 
      * @param file The file which contains the state of the game.
-     * @return A object of MagicBakery.
+     * @return An object of MagicBakery.
+     * @throws IOException If there are any problems reading the file.
+     * @throws ClassNotFoundException If the object loaded does not belong to any class.
      */
-    public static MagicBakery loadState(File file){
-        return null;
+    public static MagicBakery loadState(File file) throws IOException, ClassNotFoundException {
+        MagicBakery game = null;
+        try (
+                FileInputStream gamefile = new FileInputStream(file);
+                ObjectInputStream read = new ObjectInputStream(gamefile);
+        ) {
+            game = (MagicBakery) read.readObject();
+        }
+        return game;
     }
 
     /**
@@ -360,9 +333,11 @@ public class MagicBakery implements Serializable{
      * 
      * @param ingredient The ingredient to pass to the other player.
      * @param recipient The other player bound to receive the card.
-     * @throws WrongIngredientsException If ingredient not found in the current player's hand.
      */
     public void passCard(Ingredient ingredient, Player recipient){
+        if(this.action_count<0){
+            throw new TooManyActionsException();
+        }
         if(!getCurrentPlayer().getHand().contains(ingredient)){
             throw new WrongIngredientsException("Ingredient card not found in current player's hand; Cannot pass to another player");
         }
@@ -393,6 +368,10 @@ public class MagicBakery implements Serializable{
         for(String line:StringUtils.ingredientsToStrings(this.pantry)){
             System.out.println(line);
         }
+        System.out.println("Customers: ");
+        for(String line:StringUtils.customerOrdersToStrings(customers.getActiveCustomers())){
+            System.out.println(line);
+        }
         System.out.println("It's your turn "+getCurrentPlayer()+"!");
         System.out.println("Your hand contains: "+getCurrentPlayer().getHandStr());
     }
@@ -402,6 +381,9 @@ public class MagicBakery implements Serializable{
      * The discarded items are added to the pantry discard pile.
      */
     public void refreshPantry(){
+        if(this.action_count<0){
+            throw new TooManyActionsException();
+        }
         this.pantryDiscard.addAll(this.pantry);
         this.pantry.clear();
         for(int i=0; i<5; i++){
@@ -414,8 +396,15 @@ public class MagicBakery implements Serializable{
      * Saves the state of the game by serialising it to a file.
      *
      * @param file the file to save the state to
+     * @throws IOException If there are any problems reading the file.
      */
-    public void saveState(File file){
+    public void saveState(File file) throws IOException{
+        try(
+                FileOutputStream gamefile=new FileOutputStream(file);
+                ObjectOutputStream write=new ObjectOutputStream(gamefile);
+                ){
+            write.writeObject(this);
+        }
 
     }
 
@@ -427,10 +416,10 @@ public class MagicBakery implements Serializable{
      * 
      * @param playerNames       a list of player names
      * @param customerDeckFile  the file path of the customer deck
-     * @throws IllegalArgumentException if the number of players is invalid 
      * (if there are less than 2 or more 5 players),
+     * @throws IOException If there are any problems reading the file.
      */
-    public void startGame(List<String> playerNames, String customerDeckFile){
+    public void startGame(List<String> playerNames, String customerDeckFile) throws IOException{
         if(playerNames.size()>5 || playerNames.size()<2){
             throw new IllegalArgumentException("Invalid number of players!");
         }
@@ -439,18 +428,16 @@ public class MagicBakery implements Serializable{
             this.players.add(new Player(p));
         }
 
+        this.customers=new Customers(customerDeckFile, this.random, this.layers, this.players.size());
+
         Collections.shuffle((List<Ingredient>)this.pantryDeck, this.random);
+
+        this.customers.addCustomerOrder();
+        this.customers.addCustomerOrder();
 
         for(int i=0; i<5; i++){
             this.pantry.add(drawFromPantryDeck());
         }
-
-        /* for(Player player: players){
-            player.addToHand(new Ingredient("eggs"));
-            //player.addToHand(new Ingredient("sugar"));
-            player.addToHand(Ingredient.HELPFUL_DUCK);
-            player.addToHand(new Ingredient("butter"));
-        } */
 
         for(Player player:this.players){
             for(int i=0; i<3; i++){
