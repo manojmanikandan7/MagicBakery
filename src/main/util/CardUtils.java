@@ -95,10 +95,10 @@ public class CardUtils {
 
     private static List<Ingredient> stringToIngredients(String str) {
         str = str.strip();
-        String[] values = str.split(", ");
+        String[] values = str.split(",");
         ArrayList<Ingredient> list = new ArrayList<Ingredient>();
-        for (int i = 0; i < Integer.parseInt(values[1]); i++) {
-            if (values[0].equals("helpful duck 𓅭")) {
+        for (int i = 0; i < Integer.parseInt(values[1].trim()); i++) {
+            if (values[0].trim().equals("helpful duck 𓅭")) {
                 list.add(Ingredient.HELPFUL_DUCK);
             } else {
                 list.add(new Ingredient(values[0]));
@@ -109,12 +109,12 @@ public class CardUtils {
 
     private static List<Layer> stringToLayers(String str) {
         str = str.strip();
-        String[] values = str.split(", ");
-        String[] ing_str = values[1].split("; ");
+        String[] values = str.split(",");
+        String[] ing_str = values[1].split(";");
 
         ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
         for (String ing : ing_str) {
-            ingredients.add(new Ingredient(ing));
+            ingredients.add(new Ingredient(ing.trim()));
         }
 
 
@@ -129,17 +129,17 @@ public class CardUtils {
         ArrayList<Layer> layer_list = new ArrayList<Layer>(layers);
 
         str = str.strip();
-        String[] items = str.split(", ");
-        String[] recipes = items[2].split("; ");
+        String[] items = str.split(",");
+        String[] recipes = items[2].split(";");
         String[] garnishes = {};
         if (items.length >= 4)
-            garnishes = items[3].split("; ");
+            garnishes = items[3].split(";");
 
         ArrayList<Ingredient> recipe_list = new ArrayList<Ingredient>();
         ArrayList<Ingredient> garnish_list = new ArrayList<Ingredient>();
 
         for (int j = 0; j < recipes.length; j++) {
-            String item = recipes[j];
+            String item = recipes[j].trim();
             boolean isLayer = false;
             for (int i = 0; i < layer_list.size(); i++) {
                 if (layer_list.get(i).toString().equals(item)) {
@@ -154,7 +154,7 @@ public class CardUtils {
         }
 
         for (int j = 0; j < garnishes.length; j++) {
-            String item = garnishes[j];
+            String item = garnishes[j].trim();
             boolean isLayer = false;
             for (int i = 0; i < layers.size(); i++) {
                 if (layer_list.get(i).toString().equals(item)) {
@@ -168,7 +168,7 @@ public class CardUtils {
             }
         }
 
-        return new CustomerOrder(items[1], recipe_list, garnish_list, Integer.parseInt(items[0]));
+        return new CustomerOrder(items[1], recipe_list, garnish_list, Integer.parseInt(items[0].trim()));
 
     }
 }
