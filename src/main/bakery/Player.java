@@ -1,7 +1,11 @@
 package bakery;
 
+import util.StringUtils;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.io.Serializable;
 
 /**
@@ -91,11 +95,33 @@ public class Player implements Serializable{
             return "";
         }
 
-        String description="";
+        HashMap<Ingredient, Integer> number=new HashMap<Ingredient, Integer>();
+        ArrayList<String> description=new ArrayList<String>();
         for(Ingredient ingredient : getHand()){
-            description+=ingredient+", ";
+            if(number.containsKey(ingredient)){
+                number.replace(ingredient, number.get(ingredient)+1);
+            }
+            else{
+                number.put(ingredient, 1);
+            }
         }
-        return description.substring(0, description.length()-2);
+        for (Map.Entry<Ingredient, Integer> entry : number.entrySet()) {
+            Ingredient ingredient = entry.getKey();
+            Integer integer = entry.getValue();
+            if (integer != 1) {
+                description.add(StringUtils.toTitleCase(ingredient.toString()) + " (x" + integer + ")");
+            }
+            else {
+                description.add(StringUtils.toTitleCase(ingredient.toString()));
+            }
+        }
+
+        description.sort(null); //Sorting entries alphabetically
+        String string_description="";
+        for(String part:description){
+            string_description+=part+", ";
+        }
+        return string_description.substring(0, string_description.length()-2);
     }
 
     /**
