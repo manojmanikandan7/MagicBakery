@@ -37,11 +37,11 @@ public class Layer extends Ingredient{
     public boolean canBake(List<Ingredient> ingredients){
         int count=this.recipe.size();
         for(Ingredient ingredient:this.recipe){
-            if(ingredients.contains(ingredient)){
+            if(ingredients.remove(ingredient)){
                 count--;
             }
         }
-        if(count==0){
+        if(count<=0){
             return true;
         }
         else{
@@ -51,7 +51,9 @@ public class Layer extends Ingredient{
                     duck_count++;
                 }
             }
-            return duck_count == count;
+            System.out.println("the number of ducks: "+duck_count);
+            System.out.println("the number of cards remaining"+count);
+            return duck_count >= count;
         }
     }
     /**
@@ -60,6 +62,7 @@ public class Layer extends Ingredient{
      * @return The list of ingredients needed to bake this layer.
      */
     public List<Ingredient> getRecipe(){
+        this.recipe.sort(null);
         return this.recipe;
     }
 
@@ -77,7 +80,7 @@ public class Layer extends Ingredient{
         }
 
         String description="";
-        for(Ingredient ingredient : this.recipe){
+        for(Ingredient ingredient : getRecipe()){
             description+=ingredient+", ";
         }
         return description.substring(0, description.length()-2);
@@ -89,6 +92,6 @@ public class Layer extends Ingredient{
      * @return A hash code based on the name and the recipe of the layer.
      */
     public int hashCode(){
-        return super.hashCode() * this.recipe.hashCode();
+        return (super.hashCode() * getRecipe().hashCode());
     }
 }

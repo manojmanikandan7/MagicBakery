@@ -101,7 +101,7 @@ public class CardUtils {
             if (values[0].trim().equals("helpful duck 𓅭")) {
                 list.add(Ingredient.HELPFUL_DUCK);
             } else {
-                list.add(new Ingredient(values[0]));
+                list.add(new Ingredient(values[0].trim()));
             }
         }
         return list;
@@ -132,7 +132,7 @@ public class CardUtils {
         String[] items = str.split(",");
         String[] recipes = items[2].split(";");
         String[] garnishes = {};
-        if (items.length >= 4)
+        if (items.length >= 4 && !items[3].trim().isEmpty())
             garnishes = items[3].split(";");
 
         ArrayList<Ingredient> recipe_list = new ArrayList<Ingredient>();
@@ -143,7 +143,7 @@ public class CardUtils {
             boolean isLayer = false;
             for (int i = 0; i < layer_list.size(); i++) {
                 if (layer_list.get(i).toString().equals(item)) {
-                    recipe_list.addAll(layer_list.get(i).getRecipe());
+                    recipe_list.add(layer_list.get(i));
                     isLayer = true;
                     break;
                 }
@@ -158,7 +158,7 @@ public class CardUtils {
             boolean isLayer = false;
             for (int i = 0; i < layers.size(); i++) {
                 if (layer_list.get(i).toString().equals(item)) {
-                    garnish_list.addAll(layer_list.get(i).getRecipe());
+                    garnish_list.add(layer_list.get(i));
                     isLayer = true;
                     break;
                 }
@@ -168,7 +168,7 @@ public class CardUtils {
             }
         }
 
-        return new CustomerOrder(items[1], recipe_list, garnish_list, Integer.parseInt(items[0].trim()));
+        return new CustomerOrder(items[1].trim(), recipe_list, garnish_list, Integer.parseInt(items[0].trim()));
 
     }
 }
