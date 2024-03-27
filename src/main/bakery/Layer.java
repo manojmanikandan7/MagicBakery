@@ -1,5 +1,6 @@
 package bakery;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,9 +36,10 @@ public class Layer extends Ingredient{
      * @return True, if the layer can be baked with the given ingredients, False otherwise
      */
     public boolean canBake(List<Ingredient> ingredients){
+        List<Ingredient> copy=new ArrayList<Ingredient>(ingredients);
         int count=this.recipe.size();
         for(Ingredient ingredient:this.recipe){
-            if(ingredients.remove(ingredient)){
+            if(copy.remove(ingredient)){
                 count--;
             }
         }
@@ -46,13 +48,11 @@ public class Layer extends Ingredient{
         }
         else{
             int duck_count=0;
-            for(Ingredient ingredient: ingredients){
+            for(Ingredient ingredient: copy){
                 if(ingredient.equals(Ingredient.HELPFUL_DUCK)){
                     duck_count++;
                 }
             }
-            System.out.println("the number of ducks: "+duck_count);
-            System.out.println("the number of cards remaining"+count);
             return duck_count >= count;
         }
     }

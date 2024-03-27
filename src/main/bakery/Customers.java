@@ -1,6 +1,5 @@
 package bakery;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,6 +7,8 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.Random;
+import java.util.EmptyStackException;
+import java.io.IOException;
 import java.io.Serializable;
 
 import util.CardUtils;
@@ -57,14 +58,15 @@ public class Customers implements Serializable{
      */
     public CustomerOrder addCustomerOrder(){
         CustomerOrder leaving=timePasses();
-        if(this.customerDeck.isEmpty()){
-            this.activeCustomers.add(null);
-        }
-        else{
-            this.activeCustomers.add(drawCustomer());
-        }
         if(leaving!=null){
             ((Stack<CustomerOrder>)this.inactiveCustomers).push(leaving);
+        }
+        if(this.customerDeck.isEmpty()){
+            this.activeCustomers.add(null);
+            throw new EmptyStackException();
+        }
+        else {
+            this.activeCustomers.add(drawCustomer());
         }
         return leaving;
     }
@@ -79,7 +81,7 @@ public class Customers implements Serializable{
             return true;
         }
         if(this.customerDeck.isEmpty()) {
-            return ((LinkedList<CustomerOrder>) this.activeCustomers).get(1) != null ||
+            return ((LinkedList<CustomerOrder>) this.activeCustomers).get(0) != null &&
                     ((LinkedList<CustomerOrder>) this.activeCustomers).get(2) == null;
         }
         return false;
@@ -164,12 +166,11 @@ public class Customers implements Serializable{
     private void initialiseCustomerDeck(String deckFile, Collection<Layer> layers, int numPlayers) throws IOException {
         this.customerDeck=new Stack<CustomerOrder>();
 
-        Stack<CustomerOrder> list=new Stack<CustomerOrder>();
-        list.addAll(CardUtils.readCustomerFile(deckFile, layers));
-        Collections.shuffle((list), random);
-        Stack<CustomerOrder> level1=new Stack<CustomerOrder>();
-        Stack<CustomerOrder> level2=new Stack<CustomerOrder>();
-        Stack<CustomerOrder> level3=new Stack<CustomerOrder>();
+        ArrayList<CustomerOrder> list = new ArrayList<CustomerOrder>(CardUtils.readCustomerFile(deckFile, layers));
+        Collections.shuffle(list, this.random);
+        LinkedList<CustomerOrder> level1=new LinkedList<CustomerOrder>();
+        LinkedList<CustomerOrder> level2=new LinkedList<CustomerOrder>();
+        LinkedList<CustomerOrder> level3=new LinkedList<CustomerOrder>();
         int[] nums=new int[3];
         switch (numPlayers) {
             case 2:
@@ -185,8 +186,8 @@ public class Customers implements Serializable{
                 break;
             case 5:
                 nums[0]=0;
-                nums[1]=2;
-                nums[2]=3;
+                nums[1]=1;
+                nums[2]=6;
                 break;
         }
         for(CustomerOrder customer:list){
@@ -205,13 +206,13 @@ public class Customers implements Serializable{
             for (int j = 0; j < nums[i]; j++) {
                 switch (i) {
                     case 0:
-                        this.customerDeck.add(level1.pop());
+                        this.customerDeck.add(level1.remove());
                         break;
                     case 1:
-                        this.customerDeck.add(level2.pop());
+                        this.customerDeck.add(level2.remove());
                         break;
                     case 2:
-                        this.customerDeck.add(level3.pop());
+                        this.customerDeck.add(level3.remove());
                         break;
                 }
             }

@@ -1,5 +1,6 @@
 package bakery;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
 
@@ -63,7 +64,37 @@ public class CustomerOrder implements Serializable{
      * @return true if the Customer Order can be fulfilled, false otherwise
      */
     public boolean canFulfill(List<Ingredient> ingredients){
-        return false;
+        List<Ingredient> ingredient_copy=new ArrayList<Ingredient>(ingredients);
+        List<Ingredient> recipe_copy=new ArrayList<Ingredient>(this.recipe);
+        int count=this.recipe.size();
+        for(Ingredient ingredient:this.recipe){
+            if(ingredient_copy.remove(ingredient)){
+                recipe_copy.remove(ingredient);
+                count--;
+            }
+        }
+        if(count<=0) {
+            return true;
+        }
+        else{
+            int duck_count=0;
+            for(Ingredient ingredient: ingredient_copy){
+                if(ingredient.equals(Ingredient.HELPFUL_DUCK)){
+                    duck_count++;
+                }
+            }
+            for(Ingredient ingredient:recipe_copy){
+                if(this.recipe.contains(ingredient)){
+                    if(ingredient instanceof Layer){
+                        return false;
+                    }
+                    else{
+                        duck_count--;
+                    }
+                }
+            }
+            return duck_count>=0;
+        }
     }
 
     /**
@@ -73,7 +104,37 @@ public class CustomerOrder implements Serializable{
      * @return true if the Customer Order can be fulfilled, false otherwise
      */
     public boolean canGarnish(List<Ingredient> ingredients){
-        return false;
+        List<Ingredient> ingredient_copy=new ArrayList<Ingredient>(ingredients);
+        List<Ingredient> garnish_copy=new ArrayList<Ingredient>(this.garnish);
+        int count=this.garnish.size();
+        for(Ingredient ingredient:this.garnish){
+            if(ingredient_copy.remove(ingredient)){
+                garnish_copy.remove(ingredient);
+                count--;
+            }
+        }
+        if(count<=0) {
+            return true;
+        }
+        else{
+            int duck_count=0;
+            for(Ingredient ingredient: ingredient_copy){
+                if(ingredient.equals(Ingredient.HELPFUL_DUCK)){
+                    duck_count++;
+                }
+            }
+            for(Ingredient ingredient:garnish_copy){
+                if(this.garnish.contains(ingredient)){
+                    if(ingredient instanceof Layer){
+                        return false;
+                    }
+                    else{
+                        duck_count--;
+                    }
+                }
+            }
+            return duck_count>=0;
+        }
     }
     /**
      * Sets the status to FULFILLED if this customer order if fulfillable, or to GARNISHED if garnish is true and if garnishable.

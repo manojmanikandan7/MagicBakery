@@ -224,26 +224,8 @@ public class MagicBakery implements Serializable{
     public Collection<Layer> getBakeableLayers(){
         Collection<Layer> bakeable_layers=new ArrayList<Layer>();
         for(Layer layer:getLayers()){
-            List<Ingredient> recipe=layer.getRecipe();
-            int count=recipe.size();
-            for(Ingredient ingredient:getCurrentPlayer().getHand()){
-                if(recipe.contains(ingredient)){
-                    count--;
-                }
-            }
-            if(count==0){
+            if(layer.canBake(getCurrentPlayer().getHand())){
                 bakeable_layers.add(layer);
-            }
-            else{
-                int duck_count=0;
-                for(Ingredient ingredient: getCurrentPlayer().getHand()){
-                    if(ingredient.equals(Ingredient.HELPFUL_DUCK)){
-                        duck_count++;
-                    }
-                }
-                if(duck_count==count){
-                    bakeable_layers.add(layer);
-                }
             }
         }
         return bakeable_layers;
