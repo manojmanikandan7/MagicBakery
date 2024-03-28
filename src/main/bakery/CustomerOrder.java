@@ -144,7 +144,35 @@ public class CustomerOrder implements Serializable{
      * @return The subset of ingredients used to fulfill the order.
      */
     public List<Ingredient> fulfill(List<Ingredient> ingredients, boolean garnish){
-        return null;
+        List<Ingredient> ingredient_copy=new ArrayList<Ingredient>(ingredients);
+        if(canFulfill(ingredients)){
+            setStatus(CustomerOrderStatus.FULFILLED);
+            for(Ingredient ingredient : this.recipe){
+                if(!ingredient_copy.remove(ingredient)){
+                    ingredient_copy.remove(Ingredient.HELPFUL_DUCK);
+                }
+            }
+            if(garnish && !this.garnish.isEmpty()){
+                if(canGarnish(ingredient_copy)){
+                    for(Ingredient ingredient : this.garnish){
+                        if(!ingredient_copy.remove(ingredient)){
+                            ingredient_copy.remove(Ingredient.HELPFUL_DUCK);
+                        }
+                    }
+                    setStatus(CustomerOrderStatus.GARNISHED);
+                }
+            }
+            List<Ingredient> used=new ArrayList<Ingredient>();
+            for(Ingredient ingredient : ingredients){
+                if(!ingredient_copy.contains(ingredient)){
+                    used.add(ingredient);
+                }
+            }
+            return used;
+        }
+        else{
+            throw new WrongIngredientsException();
+        }
     }
 
     /**
@@ -153,7 +181,7 @@ public class CustomerOrder implements Serializable{
      * @return The list of garnish ingredients.
      */
     public List<Ingredient> getGarnish(){
-        return garnish;
+        return this.garnish;
     }
 
     /**
@@ -165,12 +193,12 @@ public class CustomerOrder implements Serializable{
      */
     public String getGarnishDescription(){
 
-        if(garnish.isEmpty()){
+        if(this.garnish.isEmpty()){
             return "";
         }
 
         String description="";
-        for(Ingredient ingredient : garnish){
+        for(Ingredient ingredient : this.garnish){
             description+=ingredient+", ";
         }
         return description.substring(0, description.length()-2);
@@ -182,7 +210,7 @@ public class CustomerOrder implements Serializable{
      * @return The level of the customer order.
      */
     public int getLevel(){
-        return level;
+        return this.level;
     }
 
     /**
@@ -191,7 +219,7 @@ public class CustomerOrder implements Serializable{
      * @return The list of recipe ingredients.
      */
     public List<Ingredient> getRecipe(){
-        return recipe;
+        return this.recipe;
     }
 
     /**
@@ -203,12 +231,12 @@ public class CustomerOrder implements Serializable{
      */
     public String getRecipeDescription(){
 
-        if(recipe.isEmpty()){
+        if(this.recipe.isEmpty()){
             return "";
         }
 
         String description="";
-        for(Ingredient ingredient : recipe){
+        for(Ingredient ingredient : this.recipe){
             description+=ingredient+", ";
         }
         return description.substring(0, description.length()-2);
@@ -220,7 +248,7 @@ public class CustomerOrder implements Serializable{
      * @return The customer order status enumeration.
      */
     public CustomerOrderStatus getStatus(){
-        return status;
+        return this.status;
     }
 
     /**
@@ -238,6 +266,6 @@ public class CustomerOrder implements Serializable{
      * @return The name of the customer order.
      */
     public String toString(){
-        return name;
+        return this.name;
     }
 }
