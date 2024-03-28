@@ -58,14 +58,11 @@ public class Customers implements Serializable{
      */
     public CustomerOrder addCustomerOrder(){
         CustomerOrder leaving=timePasses();
-        if(leaving!=null){
-            ((Stack<CustomerOrder>)this.inactiveCustomers).push(leaving);
-        }
         if(this.customerDeck.isEmpty()){
-            this.activeCustomers.add(null);
             throw new EmptyStackException();
         }
         else {
+            ((LinkedList<CustomerOrder>)this.activeCustomers).removeLast();
             this.activeCustomers.add(drawCustomer());
         }
         return leaving;
@@ -78,11 +75,15 @@ public class Customers implements Serializable{
      */
     public boolean customerWillLeaveSoon(){
         if(!this.activeCustomers.contains(null)){
+            ((LinkedList<CustomerOrder>)this.activeCustomers).getFirst().setStatus(CustomerOrderStatus.IMPATIENT);
             return true;
         }
         if(this.customerDeck.isEmpty()) {
-            return ((LinkedList<CustomerOrder>) this.activeCustomers).get(0) != null &&
-                    ((LinkedList<CustomerOrder>) this.activeCustomers).get(2) == null;
+            if(((LinkedList<CustomerOrder>) this.activeCustomers).getFirst() != null &&
+                    ((LinkedList<CustomerOrder>) this.activeCustomers).getLast() == null){
+                ((LinkedList<CustomerOrder>)this.activeCustomers).getFirst().setStatus(CustomerOrderStatus.IMPATIENT);
+                return true;
+            }
         }
         return false;
     }
@@ -128,8 +129,11 @@ public class Customers implements Serializable{
      */
     public Collection<CustomerOrder> getFulfilable(List<Ingredient> hand){
         Collection<CustomerOrder> fulfillable=new ArrayList<CustomerOrder>();
-        for(CustomerOrder customer: this.activeCustomers){
-            if(hand.containsAll(customer.getRecipe())){
+        if(isEmpty()) {
+            return fulfillable;
+        }
+        for(CustomerOrder customer : getActiveCustomers()){
+            if(customer.canFulfill(hand)){
                 fulfillable.add(customer);
             }
         }
@@ -244,7 +248,7 @@ public class Customers implements Serializable{
             return null;
         }
         else{
-            return ((LinkedList<CustomerOrder>)this.activeCustomers).peek();
+            return ((LinkedList<CustomerOrder>)this.activeCustomers).getFirst();
         }
     }
 
@@ -255,7 +259,7 @@ public class Customers implements Serializable{
      */
     public void remove(CustomerOrder customer){
         ((LinkedList<CustomerOrder>)this.activeCustomers).set(((LinkedList<CustomerOrder>)this.activeCustomers).indexOf(customer), null);
-        this.activeCustomers.remove(customer);
+        ((Stack<CustomerOrder>)this.inactiveCustomers).push(customer);
     }
 
     /**
@@ -286,10 +290,21 @@ public class Customers implements Serializable{
      * @return The customer if they left the bakery after this round, null, otherwise.
      */
     public CustomerOrder timePasses(){
+
         if(customerWillLeaveSoon()) {
-            return ((LinkedList<CustomerOrder>) this.activeCustomers).remove(); //Removes the customer about to leave soon
+            CustomerOrder leaving = ((LinkedList<CustomerOrder>) this.activeCustomers).remove(); //Removes the customer about to leave soon
+            this.activeCustomers.add(null);
+            leaving.abandon();
+            ((Stack<CustomerOrder>)this.inactiveCustomers).push(leaving);
+            return leaving;
         }
-        this.activeCustomers.remove(null);  //Removes the first occurrence of null (i.e. Empty spot)
+        if (this.customerDeck.isEmpty()) {
+            this.activeCustomers.remove(null);  //Removes the first occurrence of null (i.e. Empty spot)
+        }
+        else{
+            ((LinkedList<CustomerOrder>)this.activeCustomers).removeLastOccurrence(null);
+        }
+        this.activeCustomers.add(null);
         return null;
     }
 }
