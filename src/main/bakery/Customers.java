@@ -45,7 +45,7 @@ public class Customers implements Serializable{
         for(int i=0; i<3; i++){
             this.activeCustomers.add(null);
         }
-        this.inactiveCustomers=new Stack<CustomerOrder>(); //COMEBACK
+        this.inactiveCustomers=new ArrayList<CustomerOrder>(0);
         this.random=random;
         initialiseCustomerDeck(deckFile, layers, numPlayers);
     }
@@ -64,6 +64,9 @@ public class Customers implements Serializable{
         else {
             ((LinkedList<CustomerOrder>)this.activeCustomers).removeLast();
             this.activeCustomers.add(drawCustomer());
+        }
+        if(!this.activeCustomers.contains(null)){
+            ((LinkedList<CustomerOrder>)this.activeCustomers).getFirst().setStatus(CustomerOrderStatus.IMPATIENT);
         }
         return leaving;
     }
@@ -259,7 +262,7 @@ public class Customers implements Serializable{
      */
     public void remove(CustomerOrder customer){
         ((LinkedList<CustomerOrder>)this.activeCustomers).set(((LinkedList<CustomerOrder>)this.activeCustomers).indexOf(customer), null);
-        ((Stack<CustomerOrder>)this.inactiveCustomers).push(customer);
+        this.inactiveCustomers.add(customer);
     }
 
     /**
@@ -295,7 +298,7 @@ public class Customers implements Serializable{
             CustomerOrder leaving = ((LinkedList<CustomerOrder>) this.activeCustomers).remove(); //Removes the customer about to leave soon
             this.activeCustomers.add(null);
             leaving.abandon();
-            ((Stack<CustomerOrder>)this.inactiveCustomers).push(leaving);
+            this.inactiveCustomers.add(leaving);
             return leaving;
         }
         if (this.customerDeck.isEmpty()) {

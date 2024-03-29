@@ -2,14 +2,7 @@ package bakery;
 
 import java.lang.IllegalArgumentException;
 import java.lang.ClassNotFoundException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.ArrayDeque;
-import java.util.Stack;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 import java.io.Serializable;
 import java.io.File;
 import java.io.ObjectOutputStream;
@@ -91,8 +84,14 @@ public class MagicBakery implements Serializable{
         }
         if(getBakeableLayers().contains(layer)){
             for(Ingredient ingredient:layer.getRecipe()){
-                getCurrentPlayer().removeFromHand(ingredient);
-                this.pantryDiscard.add(ingredient);
+                if(getCurrentPlayer().hasIngredient(ingredient)){
+                    getCurrentPlayer().removeFromHand(ingredient);
+                    this.pantryDiscard.add(ingredient);
+                }
+                else {
+                    getCurrentPlayer().getHand().remove(Ingredient.HELPFUL_DUCK);
+                    this.pantryDiscard.add(Ingredient.HELPFUL_DUCK);
+                }
             }
             this.layers.remove(layer);
             getCurrentPlayer().addToHand(layer);
@@ -108,7 +107,7 @@ public class MagicBakery implements Serializable{
             if(this.pantryDiscard.isEmpty()){
                 throw new EmptyPantryException("The pantry is empty, use the cards in your hand to bake.", new RuntimeException());
             }
-            this.pantryDeck=this.pantryDiscard;
+            this.pantryDeck.addAll(this.pantryDiscard);
             this.pantryDiscard.clear();
             Collections.shuffle((List<Ingredient>)this.pantryDeck, this.random);
         }
@@ -159,16 +158,17 @@ public class MagicBakery implements Serializable{
      * @return True, if it is the end of turn, False, otherwise.
      */
     public boolean endTurn(){
-        if(getActionsRemaining()>0){
-            return false;
-        }
-        Player currentPlayer=getCurrentPlayer();
-        this.players.remove(currentPlayer);
-        if(getCurrentPlayer().toString().equals(this.firstPlayer.toString())){
+        Player player=((ArrayDeque<Player>)this.players).remove();
+        this.players.add(player);
+        if (getCurrentPlayer().toString().equals(this.firstPlayer.toString())){
             System.out.println("New Round");
-            this.customers.addCustomerOrder();
+            if (this.customers.getCustomerDeck().isEmpty()) {
+                this.customers.timePasses();
+            }
+            else {
+                this.customers.addCustomerOrder();
+            }
         }
-        this.players.add(currentPlayer);
         this.action_count=0;
         return true;
     }
@@ -181,7 +181,35 @@ public class MagicBakery implements Serializable{
      * @return List of ingredients excluding the ones used to fulfill(and/or garnish) the order.
      */
     public List<Ingredient> fulfillOrder(CustomerOrder customer, boolean garnish){
-        return null;
+        if(getActionsRemaining()<=0){
+            throw new TooManyActionsException();
+        }
+        Player currentPlayer = getCurrentPlayer();
+        List<Ingredient> added = new ArrayList<Ingredient>();
+        List<Ingredient> used = customer.fulfill(currentPlayer.getHand(), garnish);
+
+        if(!used.isEmpty()){
+            customers.remove(customer);
+            currentPlayer.getHand().removeAll(used);
+            for(Ingredient ingredient : used){
+                if(ingredient instanceof Layer){
+                    this.layers.add((Layer)ingredient);
+                }
+                else{
+                    this.pantryDiscard.add(ingredient);
+                }
+            }
+            if(this.customers.peek() != null){
+                this.customers.peek().setStatus(CustomerOrder.CustomerOrderStatus.WAITING);
+            }
+            if (customer.getStatus() == CustomerOrder.CustomerOrderStatus.GARNISHED){
+                added.add(drawFromPantryDeck());
+                added.add(drawFromPantryDeck());
+                currentPlayer.addToHand(added);
+            }
+        }
+        this.action_count++;
+        return added;
     }
 
     /**
@@ -266,7 +294,13 @@ public class MagicBakery implements Serializable{
      * @return A collection of customer orders that can be garnished.
      */
     public Collection<CustomerOrder> getGarnishableCustomers(){
-        return null;
+        Collection<CustomerOrder> garnishable = new ArrayList<CustomerOrder>();
+        for(CustomerOrder customer : customers.getActiveCustomers()){
+            if(customer.canGarnish(getCurrentPlayer().getHand()) && customer.canFulfill(getCurrentPlayer().getHand())){
+                garnishable.add(customer);
+            }
+        }
+        return garnishable;
     }
 
     /**
@@ -322,13 +356,14 @@ public class MagicBakery implements Serializable{
      * @param recipient The other player bound to receive the card.
      */
     public void passCard(Ingredient ingredient, Player recipient){
+        Player currentPlayer = getCurrentPlayer();
         if(getActionsRemaining()<=0){
             throw new TooManyActionsException();
         }
-        if(!getCurrentPlayer().getHand().contains(ingredient)){
+        if(!currentPlayer.getHand().contains(ingredient)){
             throw new WrongIngredientsException("Ingredient card not found in current player's hand; Cannot pass to another player");
         }
-        getCurrentPlayer().removeFromHand(ingredient);
+        currentPlayer.removeFromHand(ingredient);
         recipient.addToHand(ingredient);
         this.action_count++;
     }
@@ -338,7 +373,12 @@ public class MagicBakery implements Serializable{
      * and the disappointed customers who left.
      */
     public void printCustomerServiceRecord(){
+        int fulfilled = this.customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.FULFILLED).size();
+        int garnished = this.customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.GARNISHED).size();
+        int abandoned = this.customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.GIVEN_UP).size();
 
+        System.out.println("Happy customers eating baked goods: " + (fulfilled+garnished) +" (" + garnished + " garnished) \n" +
+                "Gone to Greggs instead: " + abandoned);
     }
 
     /**
@@ -346,7 +386,6 @@ public class MagicBakery implements Serializable{
      * the pantry, the customer orders yet be fulfilled and the current player's hand.
      */
     public void printGameState(){
-        endTurn();
         System.out.println("Layers: ");
         for(String line:StringUtils.layersToStrings(getLayers())){
             System.out.println(line);
@@ -355,9 +394,14 @@ public class MagicBakery implements Serializable{
         for(String line:StringUtils.ingredientsToStrings(this.pantry)){
             System.out.println(line);
         }
-        System.out.println("Customers: ");
-        for(String line:StringUtils.customerOrdersToStrings(customers.getActiveCustomers())){
-            System.out.println(line);
+        if (!this.customers.isEmpty()) {
+            System.out.println("Customers: ");
+            for(String line:StringUtils.customerOrdersToStrings(this.customers.getActiveCustomers())){
+                System.out.println(line);
+            }
+        }
+        else{
+            System.out.println("No customers waiting -- time for a brew :)");
         }
         System.out.println("It's your turn "+getCurrentPlayer()+"!");
         System.out.println("Your hand contains: "+getCurrentPlayer().getHandStr());
@@ -419,8 +463,10 @@ public class MagicBakery implements Serializable{
 
         Collections.shuffle((List<Ingredient>)this.pantryDeck, this.random);
 
-        this.customers.addCustomerOrder();
-        this.customers.addCustomerOrder();
+        for(int i = 0; i < (this.players.size()%2)+1; i++){
+            this.customers.addCustomerOrder();
+        }
+
 
         for(int i=0; i<5; i++){
             this.pantry.add(drawFromPantryDeck());
