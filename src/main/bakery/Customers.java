@@ -66,7 +66,7 @@ public class Customers implements Serializable{
             this.activeCustomers.add(drawCustomer());
         }
         if(!this.activeCustomers.contains(null)){
-            ((LinkedList<CustomerOrder>)this.activeCustomers).getFirst().setStatus(CustomerOrderStatus.IMPATIENT);
+            peek().setStatus(CustomerOrderStatus.IMPATIENT);
         }
         return leaving;
     }
@@ -78,13 +78,13 @@ public class Customers implements Serializable{
      */
     public boolean customerWillLeaveSoon(){
         if(!this.activeCustomers.contains(null)){
-            ((LinkedList<CustomerOrder>)this.activeCustomers).getFirst().setStatus(CustomerOrderStatus.IMPATIENT);
+            peek().setStatus(CustomerOrderStatus.IMPATIENT);
             return true;
         }
         if(this.customerDeck.isEmpty()) {
             if(((LinkedList<CustomerOrder>) this.activeCustomers).getFirst() != null &&
                     ((LinkedList<CustomerOrder>) this.activeCustomers).getLast() == null){
-                ((LinkedList<CustomerOrder>)this.activeCustomers).getFirst().setStatus(CustomerOrderStatus.IMPATIENT);
+                peek().setStatus(CustomerOrderStatus.IMPATIENT);
                 return true;
             }
         }
@@ -308,6 +308,9 @@ public class Customers implements Serializable{
             ((LinkedList<CustomerOrder>)this.activeCustomers).removeLastOccurrence(null);
         }
         this.activeCustomers.add(null);
+        if(peek() != null){
+            peek().setStatus(CustomerOrder.CustomerOrderStatus.WAITING);
+        }
         return null;
     }
 }
