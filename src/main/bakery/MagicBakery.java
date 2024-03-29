@@ -187,7 +187,6 @@ public class MagicBakery implements Serializable{
         Player currentPlayer = getCurrentPlayer();
         List<Ingredient> added = new ArrayList<Ingredient>();
         List<Ingredient> used = customer.fulfill(currentPlayer.getHand(), garnish);
-
         if(!used.isEmpty()){
             customers.remove(customer);
             currentPlayer.getHand().removeAll(used);
@@ -199,7 +198,7 @@ public class MagicBakery implements Serializable{
                     this.pantryDiscard.add(ingredient);
                 }
             }
-            if(this.customers.peek() != null){
+            if(!this.customers.getCustomerDeck().isEmpty() && this.customers.peek() != null){
                 this.customers.peek().setStatus(CustomerOrder.CustomerOrderStatus.WAITING);
             }
             if (customer.getStatus() == CustomerOrder.CustomerOrderStatus.GARNISHED){
