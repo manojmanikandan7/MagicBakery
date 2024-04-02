@@ -46,7 +46,7 @@ public class MagicBakery implements Serializable{
     /**
      * Stores the starting player of the game.
      */
-    public Player firstPlayer;
+    private Player currentPlayer;
 
     private static final long serialVersionUID=42L;
     
@@ -63,7 +63,7 @@ public class MagicBakery implements Serializable{
      */
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile) throws IOException{
         this.action_count=0;
-        this.players=new ArrayDeque<Player>(); 
+        this.players=new LinkedList<Player>();
         this.pantry=new ArrayList<Ingredient>();
         this.pantryDiscard=new Stack<Ingredient>();
         this.random=new Random(seed);
@@ -158,9 +158,12 @@ public class MagicBakery implements Serializable{
      * @return True, if it is the end of turn, False, otherwise.
      */
     public boolean endTurn(){
-        Player player=((ArrayDeque<Player>)this.players).remove();
-        this.players.add(player);
-        if (getCurrentPlayer().toString().equals(this.firstPlayer.toString())){
+        int index=((LinkedList<Player>)this.players).indexOf(this.currentPlayer)+1;
+        if(index < this.players.size()){
+            this.currentPlayer = ((LinkedList<Player>)this.players).get(index);
+        }
+        else{
+            this.currentPlayer = ((LinkedList<Player>)this.players).get(0);
             System.out.println("New Round");
             if (this.customers.getCustomerDeck().isEmpty()) {
                 this.customers.timePasses();
@@ -264,7 +267,7 @@ public class MagicBakery implements Serializable{
      * @return The current player of the game.
      */
     public Player getCurrentPlayer(){
-        return ((ArrayDeque<Player>)this.players).peek();
+        return this.currentPlayer;
     }
 
     /**
@@ -453,10 +456,12 @@ public class MagicBakery implements Serializable{
         if(playerNames.size()>5 || playerNames.size()<2){
             throw new IllegalArgumentException("Invalid number of players!");
         }
-        this.firstPlayer=new Player(playerNames.get(0));
+
         for(String p:playerNames){
             this.players.add(new Player(p));
         }
+
+        this.currentPlayer = ((LinkedList<Player>)this.players).get(0);
 
         this.customers=new Customers(customerDeckFile, this.random, this.layers, this.players.size());
 

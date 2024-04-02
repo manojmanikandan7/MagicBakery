@@ -2,7 +2,6 @@ package util;
 
 import java.lang.Object;
 import java.lang.IllegalArgumentException;
-import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,15 +61,26 @@ public class ConsoleUtils {
      * @param bakery The MagicBakery object to derive the actions from.
      * @return An ActionType choice the player made.
      */
-    //COME BACK
     public ActionType promptForAction(String prompt, MagicBakery bakery){
         ArrayList<ActionType> actions=new ArrayList<ActionType>();
-        Collections.addAll(actions, ActionType.values());
         ArrayList<String> actionlist=new ArrayList<String>();
+
+        actions.add(ActionType.DRAW_INGREDIENT);
         actionlist.add("Draw an ingredient from the pantry.");
-        actionlist.add("Pass an ingredient to another player.");
-        actionlist.add("Bake a layer.");
-        actionlist.add("Fulfill an order.");
+        if(!bakery.getCurrentPlayer().getHand().isEmpty()){
+            actions.add(ActionType.PASS_INGREDIENT);
+            actionlist.add("Pass an ingredient to another player.");
+        }
+        if(!bakery.getBakeableLayers().isEmpty()){
+            actions.add(ActionType.BAKE_LAYER);
+            actionlist.add("Bake a layer.");
+        }
+        if(!bakery.getFulfilableCustomers().isEmpty()){
+            actions.add(ActionType.FULFIL_ORDER);
+            actionlist.add("Fulfill an order.");
+
+        }
+        actions.add(ActionType.REFRESH_PANTRY);
         actionlist.add("Refresh the pantry.");
 
         String option=(String) promptEnumerateCollection(prompt, new ArrayList<Object>(actionlist));

@@ -35,7 +35,7 @@ public class CustomerOrder implements Serializable{
      * Throws a WrongIngredientsException if initialised with empty or null list of Ingredients for recipe.
      *
      * @param name The name of the Dish for the Customer Order.
-     * @param recipe The List of Ingredients needed to make the the Customer Order.
+     * @param recipe The List of Ingredients needed to make the Customer Order.
      * @param garnish The List of Ingredients needed to garnish the Customer Order.
      * @param level The difficulty level of the Customer Order.
      */
