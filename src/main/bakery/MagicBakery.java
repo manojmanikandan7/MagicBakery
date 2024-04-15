@@ -43,9 +43,6 @@ public class MagicBakery implements Serializable{
     
     private int action_count;
 
-    /**
-     * Stores the starting player of the game.
-     */
     private Player currentPlayer;
 
     private static final long serialVersionUID=42L;
@@ -84,17 +81,17 @@ public class MagicBakery implements Serializable{
         }
         if(getBakeableLayers().contains(layer)){
             for(Ingredient ingredient:layer.getRecipe()){
-                if(getCurrentPlayer().hasIngredient(ingredient)){
-                    getCurrentPlayer().removeFromHand(ingredient);
+                if(this.currentPlayer.hasIngredient(ingredient)){
+                    this.currentPlayer.removeFromHand(ingredient);
                     this.pantryDiscard.add(ingredient);
                 }
                 else {
-                    getCurrentPlayer().getHand().remove(Ingredient.HELPFUL_DUCK);
+                    this.currentPlayer.getHand().remove(Ingredient.HELPFUL_DUCK);
                     this.pantryDiscard.add(Ingredient.HELPFUL_DUCK);
                 }
             }
             this.layers.remove(layer);
-            getCurrentPlayer().addToHand(layer);
+            this.currentPlayer.addToHand(layer);
             this.action_count++;
         }
         else{
@@ -125,7 +122,7 @@ public class MagicBakery implements Serializable{
         }
         if(this.pantry.contains(new Ingredient(ingredientName))){
             ((ArrayList<Ingredient>)this.pantry).set(((ArrayList<Ingredient>)this.pantry).indexOf(new Ingredient(ingredientName)), drawFromPantryDeck());
-            getCurrentPlayer().addToHand(new Ingredient(ingredientName));
+            this.currentPlayer.addToHand(new Ingredient(ingredientName));
             this.action_count++;
         }
         else{
@@ -144,7 +141,7 @@ public class MagicBakery implements Serializable{
         }
         if(this.pantry.contains(ingredient)){
             ((ArrayList<Ingredient>)this.pantry).set(((ArrayList<Ingredient>)this.pantry).indexOf(ingredient), drawFromPantryDeck());
-            getCurrentPlayer().addToHand(ingredient);
+            this.currentPlayer.addToHand(ingredient);
             this.action_count++;
         }
         else{
@@ -158,13 +155,16 @@ public class MagicBakery implements Serializable{
      * @return True, if it is the end of turn, False, otherwise.
      */
     public boolean endTurn(){
+        boolean endTurn = true;
+        if(action_count<getActionsPermitted()){
+            endTurn = false;
+        }
         int index=((LinkedList<Player>)this.players).indexOf(this.currentPlayer)+1;
         if(index < this.players.size()){
             this.currentPlayer = ((LinkedList<Player>)this.players).get(index);
         }
         else{
             this.currentPlayer = ((LinkedList<Player>)this.players).get(0);
-            System.out.println("New Round");
             if (this.customers.getCustomerDeck().isEmpty()) {
                 this.customers.timePasses();
             }
@@ -173,7 +173,7 @@ public class MagicBakery implements Serializable{
             }
         }
         this.action_count=0;
-        return true;
+        return endTurn;
     }
 
     /**
@@ -187,7 +187,7 @@ public class MagicBakery implements Serializable{
         if(getActionsRemaining()<=0){
             throw new TooManyActionsException();
         }
-        Player currentPlayer = getCurrentPlayer();
+        Player currentPlayer = this.currentPlayer;
         List<Ingredient> added = new ArrayList<Ingredient>();
         List<Ingredient> used = customer.fulfill(currentPlayer.getHand(), garnish);
         if(!used.isEmpty()){
@@ -254,7 +254,7 @@ public class MagicBakery implements Serializable{
     public Collection<Layer> getBakeableLayers(){
         Collection<Layer> bakeable_layers=new ArrayList<Layer>();
         for(Layer layer:getLayers()){
-            if(layer.canBake(getCurrentPlayer().getHand())){
+            if(layer.canBake(this.currentPlayer.getHand())){
                 bakeable_layers.add(layer);
             }
         }
@@ -286,7 +286,7 @@ public class MagicBakery implements Serializable{
      * @return A collection of customer orders that can be fulfilled.
      */
     public Collection<CustomerOrder> getFulfilableCustomers(){
-        return customers.getFulfilable(getCurrentPlayer().getHand());
+        return customers.getFulfilable(this.currentPlayer.getHand());
     }
 
     /**
@@ -298,7 +298,7 @@ public class MagicBakery implements Serializable{
     public Collection<CustomerOrder> getGarnishableCustomers(){
         Collection<CustomerOrder> garnishable = new ArrayList<CustomerOrder>();
         for(CustomerOrder customer : customers.getActiveCustomers()){
-            if(customer.canGarnish(getCurrentPlayer().getHand()) && customer.canFulfill(getCurrentPlayer().getHand())){
+            if(customer.canGarnish(this.currentPlayer.getHand()) && customer.canFulfill(this.currentPlayer.getHand())){
                 garnishable.add(customer);
             }
         }
@@ -358,14 +358,13 @@ public class MagicBakery implements Serializable{
      * @param recipient The other player bound to receive the card.
      */
     public void passCard(Ingredient ingredient, Player recipient){
-        Player currentPlayer = getCurrentPlayer();
         if(getActionsRemaining()<=0){
             throw new TooManyActionsException();
         }
-        if(!currentPlayer.getHand().contains(ingredient)){
+        if(!this.currentPlayer.getHand().contains(ingredient)){
             throw new WrongIngredientsException("Ingredient card not found in current player's hand; Cannot pass to another player");
         }
-        currentPlayer.removeFromHand(ingredient);
+        this.currentPlayer.removeFromHand(ingredient);
         recipient.addToHand(ingredient);
         this.action_count++;
     }
@@ -405,8 +404,8 @@ public class MagicBakery implements Serializable{
         else{
             System.out.println("No customers waiting -- time for a brew :)");
         }
-        System.out.println("It's your turn "+getCurrentPlayer()+"!");
-        System.out.println("Your hand contains: "+getCurrentPlayer().getHandStr());
+        System.out.println("It's your turn "+this.currentPlayer+"!");
+        System.out.println("Your hand contains: "+this.currentPlayer.getHandStr());
     }
 
     /**
@@ -429,7 +428,7 @@ public class MagicBakery implements Serializable{
      * Saves the state of the game by serialising it to a file.
      *
      * @param file the file to save the state to
-     * @throws IOException If there are any problems reading the file.
+     * @throws IOException If there are any problems writing to the file.
      */
     public void saveState(File file) throws IOException{
         try(
