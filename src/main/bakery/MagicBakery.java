@@ -209,8 +209,8 @@ public class MagicBakery implements Serializable{
                 added.add(drawFromPantryDeck());
                 currentPlayer.addToHand(added);
             }
+            this.action_count++;
         }
-        this.action_count++;
         return added;
     }
 
