@@ -77,6 +77,13 @@ public class StartGame implements EventHandler<ActionEvent>{
         Button submit = new Button("Start");
         submit.setDefaultButton(true);
         submit.setPadding(new Insets(10));
+
+        Button cancel = new Button("Cancel");
+        cancel.setCancelButton(true);
+        cancel.setPadding(new Insets(10));
+        cancel.setOnAction(e1-> new Main().start((Stage)scene.getWindow()));
+
+
         submit.setOnAction(e1->{
             int choice = Character.getNumericValue(((RadioButton)group.getSelectedToggle()).getText().charAt(0));
             ArrayList<TextField> playernames = new ArrayList<TextField>();
@@ -98,7 +105,8 @@ public class StartGame implements EventHandler<ActionEvent>{
                 pn.add(playerlabel.get(i), 0, i+1);
                 pn.add(playernames.get(i), 1, i+1);
             }
-            pn.add(submit, 0, i+1, 2, 1);
+            pn.add(submit, 0, i+1, 1, 1);
+            pn.add(cancel, 1, i+1, 1, 1);
             submit.setOnAction(e2->{
                 ArrayList<String> pnames = new ArrayList<String>();
                 playernames.forEach(name->pnames.add(name.getText().trim()));
@@ -115,10 +123,7 @@ public class StartGame implements EventHandler<ActionEvent>{
 
         });
 
-        Button cancel = new Button("Cancel");
-        cancel.setCancelButton(true);
-        cancel.setPadding(new Insets(10));
-        cancel.setOnAction(e1-> new Main().start((Stage)scene.getWindow()));
+
 
         root.add(title, 0, 0, 2, 1);
         root.add(ingredientlabel, 0,1);

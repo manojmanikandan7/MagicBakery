@@ -57,12 +57,14 @@ public class Game extends Application {
         Parent leftPane = leftPane(ob);
         Parent rightPane = rightPane(ob);
 
-        GridPane root = new GridPane();
+        HBox panes = new HBox(20);
+        panes.setAlignment(Pos.CENTER);
+        panes.setPadding(new Insets(10));
+        panes.getChildren().addAll(leftPane, new Separator(Orientation.VERTICAL), rightPane);
+
+        VBox root = new VBox(title, new Separator(), panes);
         root.setAlignment(Pos.TOP_CENTER);
-        root.setPadding(new Insets(10));
-        root.add(title, 0, 0, 2, 1);
-        root.add(leftPane, 0, 1, 1, 1);
-        root.add(rightPane, 1, 1, 1, 1);
+
         scene.setRoot(root);
     }
     public static Parent rightPane(MagicBakery ob){
