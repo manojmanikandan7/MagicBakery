@@ -1,3 +1,5 @@
+package ui;
+
 import bakery.MagicBakery;
 
 import javafx.geometry.Insets;

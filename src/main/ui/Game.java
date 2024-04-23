@@ -1,3 +1,5 @@
+package ui;
+
 import bakery.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -122,7 +124,7 @@ public class Game {
         cancel.setCancelButton(true);
         cancel.setPadding(new Insets(10));
 
-        Button save = new Button("Save Game");
+        Button save = new Button("Save ui.Game");
         save.setPadding(new Insets(10));
 
 

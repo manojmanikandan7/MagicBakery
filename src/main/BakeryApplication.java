@@ -7,11 +7,11 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
+import ui.LoadGame;
+import ui.StartGame;
 
 
-
-
-public class Main extends Application {
+public class BakeryApplication extends Application {
     public static void main(String[] args){
         launch(args);
     }
@@ -26,8 +26,8 @@ public class Main extends Application {
         title.setText("Magic Bakery");
         title.setFont(Font.font("Futura", 75));
 
-        Button startButton = new Button("Start Game");
-        Button loadButton = new Button("Load Game");
+        Button startButton = new Button("Start ui.Game");
+        Button loadButton = new Button("Load ui.Game");
 
         startButton.setPadding(new Insets(10));
         loadButton.setPadding(new Insets(10));
@@ -37,8 +37,8 @@ public class Main extends Application {
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
 
-        startButton.setOnAction(e->StartGame.handle(scene, root));
-        loadButton.setOnAction(e->LoadGame.handle(scene, root));
+        startButton.setOnAction(e-> StartGame.handle(scene, root));
+        loadButton.setOnAction(e-> LoadGame.handle(scene, root));
         primaryStage.setTitle("Welcome");
         primaryStage.setMinHeight(1440);
         primaryStage.setMinWidth(2560);
