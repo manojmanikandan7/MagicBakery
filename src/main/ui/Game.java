@@ -156,7 +156,7 @@ public class Game {
 
             HBox form = new HBox(20, fileLabel, file, cancel);
             form.setAlignment(Pos.CENTER);
-            int index = rightPane.getChildren().indexOf(save);
+            int index = rightPane.getChildren().indexOf(header);
             rightPane.getChildren().add(index, form);
 
             save.setOnAction(e1->{
