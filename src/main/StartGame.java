@@ -2,6 +2,7 @@ import bakery.MagicBakery;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -9,14 +10,11 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.Scene;
-import javafx.event.EventHandler;
-import javafx.event.ActionEvent;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,14 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
 
-public class StartGame implements EventHandler<ActionEvent>{
+public class StartGame{
 
-    @Override
-    public void handle(ActionEvent e) {
-        Scene scene = ((Button)e.getSource()).getScene();
+    public static void handle(Scene sc, Parent mainpage) {
         GridPane root = new GridPane();
         root.setPadding(new Insets(40, 20, 20, 20));
-        root.setAlignment(Pos.TOP_CENTER);
+        root.setAlignment(Pos.CENTER);
         root.setVgap(20);
         root.setHgap(10);
 
@@ -47,10 +43,10 @@ public class StartGame implements EventHandler<ActionEvent>{
         TextField layerFile = new TextField();
         TextField customerFile = new TextField();
         TextField seed = new TextField();
-        ingredientFile.setMaxWidth(scene.getWidth()/2);
-        layerFile.setMaxWidth(scene.getWidth()/2);
-        customerFile.setMaxWidth(scene.getWidth()/2);
-        seed.setMaxWidth(scene.getWidth()/2);
+        ingredientFile.setMaxWidth(sc.getWidth()/2);
+        layerFile.setMaxWidth(sc.getWidth()/2);
+        customerFile.setMaxWidth(sc.getWidth()/2);
+        seed.setMaxWidth(sc.getWidth()/2);
         ingredientlabel.setLabelFor(ingredientFile);
         layerlabel.setLabelFor(layerFile);
         customerlabel.setLabelFor(customerFile);
@@ -81,21 +77,24 @@ public class StartGame implements EventHandler<ActionEvent>{
         Button cancel = new Button("Cancel");
         cancel.setCancelButton(true);
         cancel.setPadding(new Insets(10));
-        cancel.setOnAction(e1-> new Main().start((Stage)scene.getWindow()));
+        cancel.setOnAction(e1-> {
+            ((Stage) sc.getWindow()).setTitle("Welcome");
+            sc.setRoot(mainpage);
+        });
 
 
         submit.setOnAction(e1->{
             int choice = Character.getNumericValue(((RadioButton)group.getSelectedToggle()).getText().charAt(0));
-            ArrayList<TextField> playernames = new ArrayList<TextField>();
-            ArrayList<Label> playerlabel = new ArrayList<Label>();
+            ArrayList<TextField> playernames = new ArrayList<>();
+            ArrayList<Label> playerlabel = new ArrayList<>();
             for(int i=0; i<choice; i++){
                 playerlabel.add(new Label("Player "+(i+1)+" "));
                 playernames.add(new TextField("Player "+(i+1)));
             }
-            playernames.forEach(field->field.setMaxWidth(scene.getWidth()/2));
+            playernames.forEach(field->field.setMaxWidth(sc.getWidth()/2));
             GridPane pn = new GridPane();
             pn.setPadding(new Insets(40, 20, 20, 20));
-            pn.setAlignment(Pos.TOP_CENTER);
+            pn.setAlignment(Pos.CENTER);
             pn.setVgap(20);
             pn.setHgap(10);
 
@@ -108,7 +107,7 @@ public class StartGame implements EventHandler<ActionEvent>{
             pn.add(submit, 0, i+1, 1, 1);
             pn.add(cancel, 1, i+1, 1, 1);
             submit.setOnAction(e2->{
-                ArrayList<String> pnames = new ArrayList<String>();
+                ArrayList<String> pnames = new ArrayList<>();
                 playernames.forEach(name->pnames.add(name.getText().trim()));
                 if((new HashSet<String>(pnames)).size() != pnames.size()){
                     Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -116,10 +115,10 @@ public class StartGame implements EventHandler<ActionEvent>{
                     alert.setContentText("Imposter Detected! Please enter different names.");
                     alert.show();
                 }
-                newGame(pnames, ingredientFile.getText(), layerFile.getText(), seed.getText(), customerFile.getText(), scene);
+                newGame(pnames, ingredientFile.getText(), layerFile.getText(), seed.getText(), customerFile.getText(), sc);
             });
 
-            scene.setRoot(pn);
+            sc.setRoot(pn);
 
         });
 
@@ -142,12 +141,12 @@ public class StartGame implements EventHandler<ActionEvent>{
         root.add(player5, 0, 10);
         root.add(submit, 0,11, 2, 1);
         root.add(cancel, 2,11, 2, 1);
-        scene.setRoot(root);
-        ((Stage)scene.getWindow()).setTitle("Start new game");
+        sc.setRoot(root);
+        ((Stage) sc.getWindow()).setTitle("Start new game");
 
     }
 
-    public void newGame(List<String> player_names, String ingredientfile, String layerfile, String seedline, String customerfile, Scene scene) {
+    public static void newGame(List<String> player_names, String ingredientfile, String layerfile, String seedline, String customerfile, Scene scene) {
         try{
             int seed = Integer.parseInt(seedline);
             MagicBakery ob = new MagicBakery(seed, ingredientfile.trim(), layerfile.trim());

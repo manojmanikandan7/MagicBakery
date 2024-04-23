@@ -1,6 +1,4 @@
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.text.Font;
@@ -14,15 +12,15 @@ import javafx.scene.text.Text;
 
 
 public class Main extends Application {
-    public static void main(String args[]){
+    public static void main(String[] args){
         launch(args);
     }
 
     public void start(Stage primaryStage){
 
         VBox root = new VBox(10);
-        root.setAlignment(Pos.TOP_CENTER);
-        root.setPadding(new Insets(40, 20 ,20 , 20));
+        root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(20));
 
         Text title = new Text();
         title.setText("Magic Bakery");
@@ -33,13 +31,17 @@ public class Main extends Application {
 
         startButton.setPadding(new Insets(10));
         loadButton.setPadding(new Insets(10));
-        startButton.setOnAction(new StartGame());
-        loadButton.setOnAction(new LoadGame());
+
 
         root.getChildren().addAll(title, startButton, loadButton);
-        primaryStage.setScene(new Scene(root));
-        primaryStage.setTitle("Magic Bakery");
-        primaryStage.isMaximized();
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+
+        startButton.setOnAction(e->StartGame.handle(scene, root));
+        loadButton.setOnAction(e->LoadGame.handle(scene, root));
+        primaryStage.setTitle("Welcome");
+        primaryStage.setMinHeight(1440);
+        primaryStage.setMinWidth(2560);
         primaryStage.show();
     }
 
