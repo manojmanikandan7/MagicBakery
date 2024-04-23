@@ -170,9 +170,7 @@ public class CustomerOrder implements Serializable{
             }
             return used;
         }
-        else{
-            throw new WrongIngredientsException();
-        }
+        throw new WrongIngredientsException();
     }
 
     /**
