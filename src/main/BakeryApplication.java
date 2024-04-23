@@ -12,13 +12,14 @@ import ui.StartGame;
 
 
 public class BakeryApplication extends Application {
+    /*Recommended Screen Resolution: 2560 x 1440*/
     public static void main(String[] args){
         launch(args);
     }
 
     public void start(Stage primaryStage){
 
-        VBox root = new VBox(10);
+        VBox root = new VBox(30);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(20));
 
@@ -26,8 +27,8 @@ public class BakeryApplication extends Application {
         title.setText("Magic Bakery");
         title.setFont(Font.font("Futura", 75));
 
-        Button startButton = new Button("Start ui.Game");
-        Button loadButton = new Button("Load ui.Game");
+        Button startButton = new Button("Start Game");
+        Button loadButton = new Button("Load Game");
 
         startButton.setPadding(new Insets(10));
         loadButton.setPadding(new Insets(10));
