@@ -10,58 +10,59 @@ import java.util.List;
  * @version %I%, %G%
  *
  */
-public class Layer extends Ingredient{
+public class Layer extends Ingredient {
     private List<Ingredient> recipe;
 
-    private static final long serialVersionUID=42L;
-    
+    private static final long serialVersionUID = 42L;
+
     /**
      * Initialises the name and the recipe needed to bake the layer.
      * 
-     * @param name The name of the layer.
+     * @param name   The name of the layer.
      * @param recipe The list of ingredients needed to bake this layer.
      */
-    public Layer(String name, List<Ingredient> recipe){
+    public Layer(String name, List<Ingredient> recipe) {
         super(name);
-        if(recipe==null || recipe.isEmpty()) {
+        if (recipe == null || recipe.isEmpty()) {
             throw new WrongIngredientsException("Initialised with empty or null list of Ingredients for recipe");
         }
-        this.recipe=recipe;
+        this.recipe = recipe;
     }
 
     /**
      * Checks if the given list of ingredients is sufficient to bake the layer.
      * 
      * @param ingredients the list of ingredients to check with the recipe.
-     * @return True, if the layer can be baked with the given ingredients, False otherwise
+     * @return True, if the layer can be baked with the given ingredients, False
+     *         otherwise
      */
-    public boolean canBake(List<Ingredient> ingredients){
-        List<Ingredient> copy=new ArrayList<Ingredient>(ingredients);
-        int count=this.recipe.size();
-        for(Ingredient ingredient:this.recipe){
-            if(copy.remove(ingredient)){
+    public boolean canBake(List<Ingredient> ingredients) {
+        List<Ingredient> copy = new ArrayList<Ingredient>(ingredients);
+        int count = this.recipe.size();
+        for (Ingredient ingredient : this.recipe) {
+            if (copy.remove(ingredient)) {
                 count--;
             }
         }
-        if(count<=0){
+        if (count <= 0) {
             return true;
-        }
-        else{
-            int duck_count=0;
-            for(Ingredient ingredient: copy){
-                if(ingredient.equals(Ingredient.HELPFUL_DUCK)){
+        } else {
+            int duck_count = 0;
+            for (Ingredient ingredient : copy) {
+                if (ingredient.equals(Ingredient.HELPFUL_DUCK)) {
                     duck_count++;
                 }
             }
             return duck_count >= count;
         }
     }
+
     /**
      * Gets the recipe for this layer.
      * 
      * @return The list of ingredients needed to bake this layer.
      */
-    public List<Ingredient> getRecipe(){
+    public List<Ingredient> getRecipe() {
         this.recipe.sort(null);
         return this.recipe;
     }
@@ -73,17 +74,17 @@ public class Layer extends Ingredient{
      *
      * @return the recipe description as a string.
      */
-    public String getRecipeDescription(){
+    public String getRecipeDescription() {
 
-        if(this.recipe.isEmpty()){
+        if (this.recipe.isEmpty()) {
             return "";
         }
 
-        String description="";
-        for(Ingredient ingredient : getRecipe()){
-            description+=ingredient+", ";
+        String description = "";
+        for (Ingredient ingredient : getRecipe()) {
+            description += ingredient + ", ";
         }
-        return description.substring(0, description.length()-2);
+        return description.substring(0, description.length() - 2);
     }
 
     /**
@@ -91,7 +92,7 @@ public class Layer extends Ingredient{
      *
      * @return A hash code based on the name and the recipe of the layer.
      */
-    public int hashCode(){
+    public int hashCode() {
         return (super.hashCode() * getRecipe().hashCode());
     }
 }

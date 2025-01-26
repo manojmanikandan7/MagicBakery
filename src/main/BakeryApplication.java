@@ -10,14 +10,13 @@ import javafx.scene.text.Text;
 import ui.LoadGame;
 import ui.StartGame;
 
-
 public class BakeryApplication extends Application {
-    /*Recommended Screen Resolution: 2560 x 1440*/
-    public static void main(String[] args){
+    /* Recommended Screen Resolution: 2560 x 1440 */
+    public static void main(String[] args) {
         launch(args);
     }
 
-    public void start(Stage primaryStage){
+    public void start(Stage primaryStage) {
 
         VBox root = new VBox(30);
         root.setAlignment(Pos.CENTER);
@@ -33,18 +32,16 @@ public class BakeryApplication extends Application {
         startButton.setPadding(new Insets(10));
         loadButton.setPadding(new Insets(10));
 
-
         root.getChildren().addAll(title, startButton, loadButton);
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
 
-        startButton.setOnAction(e-> StartGame.handle(scene, root));
-        loadButton.setOnAction(e-> LoadGame.handle(scene, root));
+        startButton.setOnAction(e -> StartGame.handle(scene, root));
+        loadButton.setOnAction(e -> LoadGame.handle(scene, root));
         primaryStage.setTitle("Welcome");
         primaryStage.setMinHeight(1440);
         primaryStage.setMinWidth(2560);
         primaryStage.show();
     }
-
 
 }

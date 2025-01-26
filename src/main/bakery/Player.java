@@ -15,20 +15,20 @@ import java.io.Serializable;
  * @version %I%, %G%
  *
  */
-public class Player implements Serializable{
+public class Player implements Serializable {
     private List<Ingredient> hand;
     private String name;
 
-    private static final long serialVersionUID=42L;
-    
+    private static final long serialVersionUID = 42L;
+
     /**
      * Initialises the name of the player.
      * 
      * @param name The name of the player.
      */
-    public Player(String name){
-        this.name=name;
-        hand=new ArrayList<Ingredient>();
+    public Player(String name) {
+        this.name = name;
+        hand = new ArrayList<Ingredient>();
     }
 
     /**
@@ -36,26 +36,27 @@ public class Player implements Serializable{
      *
      * @param ingredients The list of ingredients to be added to the hand.
      */
-    public void addToHand(List<Ingredient> ingredients){
+    public void addToHand(List<Ingredient> ingredients) {
         this.hand.addAll(ingredients);
     }
-    
+
     /**
      * Adds the ingredient to the player's hand.
      *
      * @param ingredient The ingredient to be added to the hand.
      */
-    public void addToHand(Ingredient ingredient){
-       this.hand.add(ingredient);
+    public void addToHand(Ingredient ingredient) {
+        this.hand.add(ingredient);
     }
-    
+
     /**
      * Checks if the player has a specific ingredient in their hand.
      *
      * @param ingredient The ingredient to check for.
-     * @return True, if the player has the ingredient in their hand, False, otherwise
+     * @return True, if the player has the ingredient in their hand, False,
+     *         otherwise
      */
-    public boolean hasIngredient(Ingredient ingredient){
+    public boolean hasIngredient(Ingredient ingredient) {
         return this.hand.contains(ingredient);
     }
 
@@ -64,21 +65,21 @@ public class Player implements Serializable{
      *
      * @param ingredient The ingredient to be removed from the hand.
      */
-    public void removeFromHand(Ingredient ingredient){
-        if(hasIngredient(ingredient)){
+    public void removeFromHand(Ingredient ingredient) {
+        if (hasIngredient(ingredient)) {
             this.hand.remove(ingredient);
-        }
-        else{
+        } else {
             throw new WrongIngredientsException("Ingredient card not found in player's hand");
         }
     }
 
     /**
-     * Returns the list of ingredients in the player's hand, sorted by name in ascending order.
+     * Returns the list of ingredients in the player's hand, sorted by name in
+     * ascending order.
      *
      * @return the list of ingredients in the player's hand.
      */
-    public List<Ingredient> getHand(){
+    public List<Ingredient> getHand() {
         this.hand.sort(null);
         return this.hand;
     }
@@ -90,18 +91,17 @@ public class Player implements Serializable{
      *
      * @return the hand description as a string.
      */
-    public String getHandStr(){
-        if(this.hand.isEmpty()){
+    public String getHandStr() {
+        if (this.hand.isEmpty()) {
             return "";
         }
 
-        HashMap<Ingredient, Integer> number=new HashMap<Ingredient, Integer>();
-        ArrayList<String> description=new ArrayList<String>();
-        for(Ingredient ingredient : getHand()){
-            if(number.containsKey(ingredient)){
-                number.replace(ingredient, number.get(ingredient)+1);
-            }
-            else{
+        HashMap<Ingredient, Integer> number = new HashMap<Ingredient, Integer>();
+        ArrayList<String> description = new ArrayList<String>();
+        for (Ingredient ingredient : getHand()) {
+            if (number.containsKey(ingredient)) {
+                number.replace(ingredient, number.get(ingredient) + 1);
+            } else {
                 number.put(ingredient, 1);
             }
         }
@@ -110,18 +110,17 @@ public class Player implements Serializable{
             Integer integer = entry.getValue();
             if (integer != 1) {
                 description.add(StringUtils.toTitleCase(ingredient.toString()) + " (x" + integer + ")");
-            }
-            else {
+            } else {
                 description.add(StringUtils.toTitleCase(ingredient.toString()));
             }
         }
 
-        description.sort(null); //Sorting entries alphabetically
-        String string_description="";
-        for(String part:description){
-            string_description+=part+", ";
+        description.sort(null); // Sorting entries alphabetically
+        String string_description = "";
+        for (String part : description) {
+            string_description += part + ", ";
         }
-        return string_description.substring(0, string_description.length()-2);
+        return string_description.substring(0, string_description.length() - 2);
     }
 
     /**
@@ -129,7 +128,7 @@ public class Player implements Serializable{
      * 
      * @return The name of the player.
      */
-    public String toString(){
+    public String toString() {
         return name;
     }
 }

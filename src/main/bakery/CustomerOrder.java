@@ -11,160 +11,167 @@ import java.io.Serializable;
  * @version %I%, %G%
  *
  */
-public class CustomerOrder implements Serializable{
+public class CustomerOrder implements Serializable {
     /**
      * The enumeration representing the status of the customer order.
      */
-    public enum CustomerOrderStatus{
-        WAITING, 
+    public enum CustomerOrderStatus {
+        WAITING,
         FULFILLED,
         GARNISHED,
         IMPATIENT,
         GIVEN_UP
     }
+
     private List<Ingredient> garnish;
     private int level;
     private String name;
     private List<Ingredient> recipe;
     private CustomerOrderStatus status;
 
-    private static final long serialVersionUID=42L;
-    
+    private static final long serialVersionUID = 42L;
+
     /**
-     * Constructor to initialise the name, recipe, garnish and level of a Customer Order.
-     * Throws a WrongIngredientsException if initialised with empty or null list of Ingredients for recipe.
+     * Constructor to initialise the name, recipe, garnish and level of a Customer
+     * Order.
+     * Throws a WrongIngredientsException if initialised with empty or null list of
+     * Ingredients for recipe.
      *
-     * @param name The name of the Dish for the Customer Order.
-     * @param recipe The List of Ingredients needed to make the Customer Order.
+     * @param name    The name of the Dish for the Customer Order.
+     * @param recipe  The List of Ingredients needed to make the Customer Order.
      * @param garnish The List of Ingredients needed to garnish the Customer Order.
-     * @param level The difficulty level of the Customer Order.
+     * @param level   The difficulty level of the Customer Order.
      */
-    public CustomerOrder(String name, List<Ingredient> recipe, List<Ingredient> garnish, int level){
-        if(recipe==null || recipe.isEmpty()) {
+    public CustomerOrder(String name, List<Ingredient> recipe, List<Ingredient> garnish, int level) {
+        if (recipe == null || recipe.isEmpty()) {
             throw new WrongIngredientsException("Initialised with empty or null list of Ingredients for the recipe");
         }
-        this.name=name;
-        this.recipe=recipe;
-        this.garnish=garnish;
-        this.level=level;
-        this.status=CustomerOrderStatus.WAITING;
+        this.name = name;
+        this.recipe = recipe;
+        this.garnish = garnish;
+        this.level = level;
+        this.status = CustomerOrderStatus.WAITING;
     }
 
     /**
      * Sets the status of the customer order to "GIVEN_UP".
      */
-    public void abandon(){
+    public void abandon() {
         setStatus(CustomerOrderStatus.GIVEN_UP);
     }
-    
+
     /**
-     * Checks if the Customer Order can be fulfilled with the given list of ingredients.
+     * Checks if the Customer Order can be fulfilled with the given list of
+     * ingredients.
      *
-     * @param ingredients the list of ingredients to check against the Customer Order
+     * @param ingredients the list of ingredients to check against the Customer
+     *                    Order
      * @return true if the Customer Order can be fulfilled, false otherwise
      */
-    public boolean canFulfill(List<Ingredient> ingredients){
-        List<Ingredient> ingredient_copy=new ArrayList<Ingredient>(ingredients);
-        List<Ingredient> recipe_copy=new ArrayList<Ingredient>(this.recipe);
-        int count=this.recipe.size();
-        for(Ingredient ingredient:this.recipe){
-            if(ingredient_copy.remove(ingredient)){
+    public boolean canFulfill(List<Ingredient> ingredients) {
+        List<Ingredient> ingredient_copy = new ArrayList<Ingredient>(ingredients);
+        List<Ingredient> recipe_copy = new ArrayList<Ingredient>(this.recipe);
+        int count = this.recipe.size();
+        for (Ingredient ingredient : this.recipe) {
+            if (ingredient_copy.remove(ingredient)) {
                 recipe_copy.remove(ingredient);
                 count--;
             }
         }
-        if(count<=0) {
+        if (count <= 0) {
             return true;
-        }
-        else{
-            int duck_count=0;
-            for(Ingredient ingredient: ingredient_copy){
-                if(ingredient.equals(Ingredient.HELPFUL_DUCK)){
+        } else {
+            int duck_count = 0;
+            for (Ingredient ingredient : ingredient_copy) {
+                if (ingredient.equals(Ingredient.HELPFUL_DUCK)) {
                     duck_count++;
                 }
             }
-            for(Ingredient ingredient:recipe_copy){
-                if(this.recipe.contains(ingredient)){
-                    if(ingredient instanceof Layer){
+            for (Ingredient ingredient : recipe_copy) {
+                if (this.recipe.contains(ingredient)) {
+                    if (ingredient instanceof Layer) {
                         return false;
-                    }
-                    else{
+                    } else {
                         duck_count--;
                     }
                 }
             }
-            return duck_count>=0;
+            return duck_count >= 0;
         }
     }
 
     /**
-     * Checks if the Customer Order can be garnished with the given list of ingredients.
+     * Checks if the Customer Order can be garnished with the given list of
+     * ingredients.
      *
-     * @param ingredients the list of ingredients to check against the Customer Order
+     * @param ingredients the list of ingredients to check against the Customer
+     *                    Order
      * @return true if the Customer Order can be fulfilled, false otherwise
      */
-    public boolean canGarnish(List<Ingredient> ingredients){
-        List<Ingredient> ingredient_copy=new ArrayList<Ingredient>(ingredients);
-        List<Ingredient> garnish_copy=new ArrayList<Ingredient>(this.garnish);
-        int count=this.garnish.size();
-        for(Ingredient ingredient:this.garnish){
-            if(ingredient_copy.remove(ingredient)){
+    public boolean canGarnish(List<Ingredient> ingredients) {
+        List<Ingredient> ingredient_copy = new ArrayList<Ingredient>(ingredients);
+        List<Ingredient> garnish_copy = new ArrayList<Ingredient>(this.garnish);
+        int count = this.garnish.size();
+        for (Ingredient ingredient : this.garnish) {
+            if (ingredient_copy.remove(ingredient)) {
                 garnish_copy.remove(ingredient);
                 count--;
             }
         }
-        if(count<=0) {
+        if (count <= 0) {
             return true;
-        }
-        else{
-            int duck_count=0;
-            for(Ingredient ingredient: ingredient_copy){
-                if(ingredient.equals(Ingredient.HELPFUL_DUCK)){
+        } else {
+            int duck_count = 0;
+            for (Ingredient ingredient : ingredient_copy) {
+                if (ingredient.equals(Ingredient.HELPFUL_DUCK)) {
                     duck_count++;
                 }
             }
-            for(Ingredient ingredient:garnish_copy){
-                if(this.garnish.contains(ingredient)){
-                    if(ingredient instanceof Layer){
+            for (Ingredient ingredient : garnish_copy) {
+                if (this.garnish.contains(ingredient)) {
+                    if (ingredient instanceof Layer) {
                         return false;
-                    }
-                    else{
+                    } else {
                         duck_count--;
                     }
                 }
             }
-            return duck_count>=0;
+            return duck_count >= 0;
         }
     }
+
     /**
-     * Sets the status to FULFILLED if this customer order if fulfillable, or to GARNISHED if garnish is true and if garnishable.
+     * Sets the status to FULFILLED if this customer order if fulfillable, or to
+     * GARNISHED if garnish is true and if garnishable.
      * 
-     * @param ingredients The list of ingredients from which the order must fulfilled or garnished.
-     * @param garnish Garnishes the order if set to True, otherwise, just fulfills it.
+     * @param ingredients The list of ingredients from which the order must
+     *                    fulfilled or garnished.
+     * @param garnish     Garnishes the order if set to True, otherwise, just
+     *                    fulfills it.
      * @return The subset of ingredients used to fulfill the order.
      */
-    public List<Ingredient> fulfill(List<Ingredient> ingredients, boolean garnish){
-        List<Ingredient> ingredient_copy=new ArrayList<Ingredient>(ingredients);
-        if(canFulfill(ingredients)){
+    public List<Ingredient> fulfill(List<Ingredient> ingredients, boolean garnish) {
+        List<Ingredient> ingredient_copy = new ArrayList<Ingredient>(ingredients);
+        if (canFulfill(ingredients)) {
             setStatus(CustomerOrderStatus.FULFILLED);
-            for(Ingredient ingredient : this.recipe){
-                if(!ingredient_copy.remove(ingredient)){
+            for (Ingredient ingredient : this.recipe) {
+                if (!ingredient_copy.remove(ingredient)) {
                     ingredient_copy.remove(Ingredient.HELPFUL_DUCK);
                 }
             }
-            if(garnish && !this.garnish.isEmpty()){
-                if(canGarnish(ingredient_copy)){
-                    for(Ingredient ingredient : this.garnish){
-                        if(!ingredient_copy.remove(ingredient)){
+            if (garnish && !this.garnish.isEmpty()) {
+                if (canGarnish(ingredient_copy)) {
+                    for (Ingredient ingredient : this.garnish) {
+                        if (!ingredient_copy.remove(ingredient)) {
                             ingredient_copy.remove(Ingredient.HELPFUL_DUCK);
                         }
                     }
                     setStatus(CustomerOrderStatus.GARNISHED);
                 }
             }
-            List<Ingredient> used=new ArrayList<Ingredient>();
-            for(Ingredient ingredient : ingredients){
-                if(!ingredient_copy.contains(ingredient)){
+            List<Ingredient> used = new ArrayList<Ingredient>();
+            for (Ingredient ingredient : ingredients) {
+                if (!ingredient_copy.contains(ingredient)) {
                     used.add(ingredient);
                 }
             }
@@ -178,7 +185,7 @@ public class CustomerOrder implements Serializable{
      *
      * @return The list of garnish ingredients.
      */
-    public List<Ingredient> getGarnish(){
+    public List<Ingredient> getGarnish() {
         return this.garnish;
     }
 
@@ -189,17 +196,17 @@ public class CustomerOrder implements Serializable{
      *
      * @return The description of the garnish.
      */
-    public String getGarnishDescription(){
+    public String getGarnishDescription() {
 
-        if(this.garnish.isEmpty()){
+        if (this.garnish.isEmpty()) {
             return "";
         }
 
-        String description="";
-        for(Ingredient ingredient : this.garnish){
-            description+=ingredient+", ";
+        String description = "";
+        for (Ingredient ingredient : this.garnish) {
+            description += ingredient + ", ";
         }
-        return description.substring(0, description.length()-2);
+        return description.substring(0, description.length() - 2);
     }
 
     /**
@@ -207,7 +214,7 @@ public class CustomerOrder implements Serializable{
      *
      * @return The level of the customer order.
      */
-    public int getLevel(){
+    public int getLevel() {
         return this.level;
     }
 
@@ -216,7 +223,7 @@ public class CustomerOrder implements Serializable{
      *
      * @return The list of recipe ingredients.
      */
-    public List<Ingredient> getRecipe(){
+    public List<Ingredient> getRecipe() {
         return this.recipe;
     }
 
@@ -227,17 +234,17 @@ public class CustomerOrder implements Serializable{
      *
      * @return The description of the recipe.
      */
-    public String getRecipeDescription(){
+    public String getRecipeDescription() {
 
-        if(this.recipe.isEmpty()){
+        if (this.recipe.isEmpty()) {
             return "";
         }
 
-        String description="";
-        for(Ingredient ingredient : this.recipe){
-            description+=ingredient+", ";
+        String description = "";
+        for (Ingredient ingredient : this.recipe) {
+            description += ingredient + ", ";
         }
-        return description.substring(0, description.length()-2);
+        return description.substring(0, description.length() - 2);
     }
 
     /**
@@ -245,7 +252,7 @@ public class CustomerOrder implements Serializable{
      * 
      * @return The customer order status enumeration.
      */
-    public CustomerOrderStatus getStatus(){
+    public CustomerOrderStatus getStatus() {
         return this.status;
     }
 
@@ -254,8 +261,8 @@ public class CustomerOrder implements Serializable{
      * 
      * @param status The customer order status to be set.
      */
-    public void setStatus(CustomerOrderStatus status){
-        this.status=status;
+    public void setStatus(CustomerOrderStatus status) {
+        this.status = status;
     }
 
     /**
@@ -263,7 +270,7 @@ public class CustomerOrder implements Serializable{
      * 
      * @return The name of the customer order.
      */
-    public String toString(){
+    public String toString() {
         return this.name;
     }
 }

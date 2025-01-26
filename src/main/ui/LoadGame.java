@@ -14,14 +14,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-
 import bakery.MagicBakery;
-
 
 import java.io.File;
 import java.io.IOException;
 
-public class LoadGame{
+public class LoadGame {
 
     public static void handle(Scene sc, Parent mainpage) {
         VBox root = new VBox(20);
@@ -40,11 +38,11 @@ public class LoadGame{
         Button submit = new Button("Start");
         submit.setDefaultButton(true);
         submit.setPadding(new Insets(10));
-        submit.setOnAction(e1->loadGame(existingGameFile.getText(), sc));
+        submit.setOnAction(e1 -> loadGame(existingGameFile.getText(), sc));
 
         Button cancel = new Button("Cancel");
         cancel.setPadding(new Insets(10));
-        cancel.setOnAction(e1-> {
+        cancel.setOnAction(e1 -> {
             ((Stage) sc.getWindow()).setTitle("Welcome");
             sc.setRoot(mainpage);
         });
@@ -60,19 +58,18 @@ public class LoadGame{
 
     }
 
-    public static void loadGame(String existingGamePath, Scene scene){
+    public static void loadGame(String existingGamePath, Scene scene) {
         try {
             MagicBakery ob = MagicBakery.loadState(new File(existingGamePath));
             Game.startGame(scene, ob);
         }
 
-        catch (ClassNotFoundException e){
+        catch (ClassNotFoundException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setContentText("Invalid encoding in file! Cannot load the game");
             alert.show();
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setContentText("Error occurred while trying to open the file. Try again");

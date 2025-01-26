@@ -9,19 +9,20 @@ import java.lang.IllegalArgumentException;
  * @version %I%, %G%
  *
  */
-public class WrongIngredientsException extends IllegalArgumentException{
+public class WrongIngredientsException extends IllegalArgumentException {
     /**
      * Thrown if the ingredient used is invalid for the particular case.
      */
-    public WrongIngredientsException(){
+    public WrongIngredientsException() {
         super();
     }
+
     /**
      * Thrown if the ingredient used is invalid for the particular case.
      *
      * @param message The message to be printed out when the exception occurs.
      */
-    public WrongIngredientsException(String message){
+    public WrongIngredientsException(String message) {
         super(message);
     }
 }
