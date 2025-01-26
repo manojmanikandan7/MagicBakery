@@ -1,6 +1,6 @@
 # UI Implementation of Kim Joy's Magic Bakery
 
-## Designed as a project for COMP16412 - [Introduction to Programming 2](https://portal.manchester.ac.uk/uPortal/p/course-unit-info.ctf1/max/render.uP?pP_action=viewCUDetails&pP_location=/CourseUnitPublishing/CourseUnitDataFiles/COMP/039761COMP164122024-08-011V17.xml)
+Designed as a project for [COMP16412 - Introduction to Programming 2](https://portal.manchester.ac.uk/uPortal/p/course-unit-info.ctf1/max/render.uP?pP_action=viewCUDetails&pP_location=/CourseUnitPublishing/CourseUnitDataFiles/COMP/039761COMP164122024-08-011V17.xml)
 
 
 ## Description
@@ -9,7 +9,7 @@
 
 - Implements the basic rules of the game. 
 
-- The Test and IO files were provided by the Course Unit Staff of COMP16412 - [Introduction to Programming 2](https://portal.manchester.ac.uk/uPortal/p/course-unit-info.ctf1/max/render.uP?pP_action=viewCUDetails&pP_location=/CourseUnitPublishing/CourseUnitDataFiles/COMP/039761COMP164122024-08-011V17.xml)
+- The Test and IO files were provided by the Course Unit Staff of [COMP16412 - Introduction to Programming 2](https://portal.manchester.ac.uk/uPortal/p/course-unit-info.ctf1/max/render.uP?pP_action=viewCUDetails&pP_location=/CourseUnitPublishing/CourseUnitDataFiles/COMP/039761COMP164122024-08-011V17.xml)
 
 - The Original [README](ORG_README.md) is also provided for reference.
 
