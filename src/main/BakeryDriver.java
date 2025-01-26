@@ -10,15 +10,16 @@ import util.ConsoleUtils;
 
 public class BakeryDriver {
 
+    private static final String IODIR = "io/";
     public BakeryDriver() {
     }
 
     public static void main(String[] args) throws IOException {
         
-        MagicBakery ob=new MagicBakery(27, "../../io/ingredients.csv" , "../../io/layers.csv");
+        MagicBakery ob=new MagicBakery(27, IODIR + "ingredients.csv" , IODIR + "layers.csv");
         ConsoleUtils in=new ConsoleUtils();
         ArrayList<String> playerstr=new ArrayList<String>(in.promptForNewPlayers("Who's playing?"));
-        ob.startGame(playerstr, "../../io/customers.csv");
+        ob.startGame(playerstr, IODIR + "customers.csv");
         for(int i=0;i<20;i++){
             ob.printGameState();
             Player currentplayer=ob.getCurrentPlayer();
